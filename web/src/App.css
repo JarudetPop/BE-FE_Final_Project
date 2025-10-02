@@ -1,0 +1,553 @@
+@import url('https://fonts.googleapis.com/css2?family=Jaro:wght@400;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f5f5f5;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 50px;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #1a73e8;
+}
+
+.logo-text {
+  font-family: 'Jaro', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* keep size and weight in sync with .logo */
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.logo-icon {
+  height: 60px;
+  width: auto;
+  margin-right: 15px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  width: 40%;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 8px 15px;
+}
+
+.search-bar input {
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 5px;
+}
+
+.search-bar button {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.login-btn, .signup-btn, .logout-btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.login-btn {
+  background-color: transparent;
+  color: #1a73e8;
+  border: 1px solid #1a73e8;
+}
+
+.login-btn:hover {
+  background-color: #1a73e8;
+  color: white;
+}
+
+.signup-btn {
+  background-color: #1a73e8;
+  color: white;
+}
+
+.signup-btn:hover {
+  background-color: #1557b0;
+}
+
+.logout-btn {
+  background-color: #dc3545;
+  color: white;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+.logout-btn:hover {
+  background-color: #c82333;
+}
+
+.welcome-text {
+  margin-right: 10px;
+  color: #333;
+}
+
+.navbar {
+  background-color: #1a73e8;
+  padding: 0 50px;
+}
+
+.navbar ul {
+  display: flex;
+  list-style: none;
+}
+
+.navbar ul li {
+  padding: 15px 20px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.navbar ul li:hover {
+  background-color: #1557b0;
+}
+
+
+.main-content {
+  padding: 30px 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+
+.game-showcase {
+  display: flex;
+  gap: 20px;
+}
+
+
+.game-image {
+  flex: 2;
+  height: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  position: relative;
+}
+
+.carousel {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.carousel-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.carousel-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.carousel-item.active {
+  opacity: 1;
+}
+
+.carousel-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.carousel-caption h3 {
+  margin: 0 0 10px;
+  font-size: 24px;
+}
+
+.carousel-caption p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  font-size: 24px;
+  padding: 15px;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+}
+
+.carousel-control:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.carousel-control.prev {
+  left: 15px;
+}
+
+.carousel-control.next {
+  right: 15px;
+}
+
+.carousel-indicators {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.indicator.active {
+  background: white;
+}
+
+.platform-buttons {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.platform-btn {
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.platform-btn:hover {
+  transform: translateY(-3px);
+}
+
+.steam {
+  background-color: #171a21;
+  color: white;
+}
+
+.ea-app {
+  background-color: #f56c2d;
+  color: white;
+}
+
+.ubisoft {
+  background-color: #000;
+  color: white;
+}
+
+
+.roblox-section {
+  background-color: #e0e0e0;
+  padding: 30px;
+  border-radius: 8px;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 10px;
+}
+
+.section-title {
+  font-size: 22px;
+  color: #333;
+  margin: 0;
+  padding: 5px 0;
+}
+
+.view-all-btn {
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.view-all-btn:hover {
+  background-color: #1557b0;
+}
+
+.roblox-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.roblox-card {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+}
+
+.roblox-card:hover {
+  transform: translateY(-5px);
+}
+
+.roblox-image {
+  height: 250px;
+  background-size: cover;
+  background-position: center;
+}
+
+.roblox-info {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-grow: 1;
+  min-height: 120px;
+}
+
+.price-button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: auto;
+}
+
+.roblox-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.roblox-price {
+  font-weight: bold;
+  color: white;
+  font-size: 18px;
+  background-color: #4CAF50;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+.buy-btn {
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  text-align: center;
+  min-width: 80px;
+}
+
+.buy-btn:hover {
+  background-color: #1557b0;
+}
+
+.footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  margin-top: 30px;
+}
+
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.form-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.form-actions button[type="button"] {
+  background-color: #6c757d;
+  color: white;
+}
+
+.form-actions button[type="button"]:hover {
+  background-color: #5a6268;
+}
+
+.form-actions button[type="submit"] {
+  background-color: #1a73e8;
+  color: white;
+}
+
+.form-actions button[type="submit"]:hover {
+  background-color: #1557b0;
+}
+
+
+@media (max-width: 768px) {
+  .header {
+      flex-direction: column;
+      gap: 15px;
+      padding: 15px;
+  }
+  
+  .search-bar {
+      width: 100%;
+  }
+  
+  .navbar {
+      padding: 0 15px;
+  }
+  
+  .navbar ul {
+      flex-wrap: wrap;
+  }
+  
+  .main-content {
+      padding: 15px;
+  }
+  
+  .game-showcase {
+      flex-direction: column;
+  }
+  
+  .game-image {
+      height: 250px;
+  }
+  
+  .auth-buttons {
+      width: 100%;
+      justify-content: center;
+  }
+}
