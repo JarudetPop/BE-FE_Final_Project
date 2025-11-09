@@ -11,10 +11,14 @@ import Navbar from '../components/navbar';
 import '../App.css';
 
 function Home() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    // Check if user is already logged in from localStorage
+    const username = localStorage.getItem('username');
+    return !!username;
+  });
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState(() => localStorage.getItem('username') || '');
   const [currentSlide, setCurrentSlide] = useState(0);
   
   // Sample images for the carousel
@@ -36,6 +40,17 @@ function Home() {
     }
   ];
   
+  // Check login status when component mounts
+  useEffect(() => {
+    const savedUsername = localStorage.getItem('username');
+    const savedIsAdmin = localStorage.getItem('isAdmin');
+    
+    if (savedUsername) {
+      setIsLoggedIn(true);
+      setUsername(savedUsername);
+    }
+  }, []);
+
   // Auto-advance the carousel every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -66,10 +81,26 @@ function Home() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // In a real app, you would validate credentials here
-    setIsLoggedIn(true);
-    setUsername('ผู้ใช้');
-    setShowLoginModal(false);
+    const formUsername = e.target.elements[0].value;
+    const formPassword = e.target.elements[1].value;
+    
+    if (formUsername === 'Admin' && formPassword === 'Admin123') {
+      setIsLoggedIn(true);
+      setUsername('Admin');
+      localStorage.setItem('username', 'Admin');
+      localStorage.setItem('isAdmin', 'true');
+      setShowLoginModal(false);
+      // เพิ่มการหน่วงเวลาเล็กน้อยก่อน redirect
+      setTimeout(() => {
+        window.location.href = '/backoffice';
+      }, 100);
+    } else {
+      setIsLoggedIn(true);
+      setUsername('ผู้ใช้');
+      localStorage.setItem('username', 'ผู้ใช้');
+      localStorage.setItem('isAdmin', 'false');
+      setShowLoginModal(false);
+    }
   };
 
   const handleSignup = (e) => {
@@ -83,6 +114,14 @@ function Home() {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUsername('');
+    localStorage.removeItem('username');
+    localStorage.removeItem('isAdmin');
+    // Dispatch logout event
+    window.dispatchEvent(new Event('logout'));
+    // Redirect to home if on backoffice page
+    if (window.location.pathname === '/backoffice') {
+      window.location.href = '/';
+    }
   };
 
   return (
@@ -174,7 +213,7 @@ function Home() {
         <section className="roblox-section">
           <div className="section-header">
             <h2 className="section-title">ออกใหม่</h2>
-            <button className="view-all-btn">ดูทั้งหมด</button>
+            <button className="view-all-btn" onClick={() => window.location.href = '/newgame'}>ดูทั้งหมด</button>
           </div>
           <div className="roblox-grid">
             <div className="roblox-card">
