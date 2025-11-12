@@ -1,0 +1,81 @@
+version: '3.9'
+
+services:
+  db:
+    # Service db: ใช้ image postgres:17-alpine (ไม่ต้องใช้ build)
+    image: postgres:17-alpine 
+    container_name: gamestore-db
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck: 
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # *** 1. เพิ่ม Service สำหรับ Backend API ***
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.dockerfile
+    container_name: gamestore-api
+    restart: always
+    ports:
+      - "8080:8080" # เปิดพอร์ต 8080 สำหรับ API
+    environment:
+      # ส่งตัวแปรเชื่อมต่อ DB ไปยัง Backend
+      DB_HOST: db 
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_DATABASE: ${POSTGRES_DB}
+      PORT: 8080
+    volumes:
+      - ./server:/app 
+      - /app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy 
+
+  # *** 2. เพิ่ม Service สำหรับ Frontend (React) ***
+  web-app:
+    build:
+      context: ./web # Context คือโฟลเดอร์ web
+      dockerfile: ../docker/react.dockerfile # สร้างใหม่ในขั้นตอนต่อไป
+    container_name: gamestore-frontend
+    restart: always
+    ports:
+      - "3000:3000" # เปิดพอร์ต 3000 สำหรับ React App
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    environment:
+      # ระบุ URL ของ Backend API 
+      REACT_APP_API_URL: http://api:8080 
+      # สำหรับ Dev/Hot-Reloading
+      CHOKIDAR_USEPOLLING: true 
+    depends_on:
+      - api # รอให้ API พร้อมก่อนรัน Frontend
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "${PGADMIN_PORT}:80"
+    depends_on:
+      - db
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  db_data:
+  pgadmin_data:

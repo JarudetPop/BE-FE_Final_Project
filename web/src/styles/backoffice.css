@@ -150,3 +150,49 @@
 .backoffice-list tr:hover {
   background-color: #f9f9f9;
 }
+/* ปุ่มจัดการ */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-edit, .btn-delete {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.25s;
+  font-size: 14px;
+}
+
+/* ปุ่มแก้ไข */
+.btn-edit {
+  background-color: #1a73e8;
+  color: white;
+}
+.btn-edit:hover {
+  background-color: #1557b0;
+  transform: translateY(-2px);
+}
+
+/* ปุ่มลบ */
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+}
+.btn-delete:hover {
+  background-color: #b71d2a;
+  transform: translateY(-2px);
+}
+.platforms-grid label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.platforms-grid input[type="checkbox"] {
+  cursor: pointer;
+}

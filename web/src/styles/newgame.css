@@ -340,3 +340,19 @@
   height: 20px;
   margin-right: 0.5rem;
 }
+.image-wrapper {
+  position: relative;
+}
+
+.coming-soon-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: linear-gradient(45deg, #ff3c3c, #ff9800);
+  color: white;
+  font-weight: bold;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
