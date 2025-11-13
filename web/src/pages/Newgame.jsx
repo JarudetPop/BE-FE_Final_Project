@@ -1,8 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import fm26Image from '../assets/games/fm26.jpg';
+import monsterImage from '../assets/games/monster.jpg';
+import needfsImage from '../assets/games/needfs.jpg';
+import sifuIamage from '../assets/games/sifu-cover.jpg';
+import farcry6Image from '../assets/games/far-cry-6-cover.jpg';
+import fifa24Image from '../assets/games/ea-sports-fc-24-cover.jpg';
+import bf1Image from '../assets/games/battlefield-1-cover.jpg';
+import assasinImabe from '../assets/games/assassins-creed-valhalla-cover.jpg';
+import watchdogsImage from '../assets/games/watch-dogs-legion-cover.jpg';
 import bdl4Image from '../assets/games/bdl4.jpg';
 import lsaImage from '../assets/games/lsa.jpg';
 import metalImage from '../assets/games/metal.jpg';
+import walLeftImage from '../assets/wal-left.jpg';
+import walRightImage from '../assets/wal-right.jpg';
 
 import '../App.css';
 import '../styles/newgame.css';
@@ -17,8 +27,8 @@ function Newgame() {
     alert(`เพิ่ม ${game.title} ลงในตะกร้าแล้ว\nราคา: ${game.price}`);
   };
 
-  // Sample game data
-  const allGames = [
+  // Sample game data - wrapped in useMemo to prevent recreation on every render
+  const allGames = useMemo(() => [
     {
       id: 1,
       title: 'Football Manager 2026',
@@ -35,7 +45,7 @@ function Newgame() {
       price: '2,290฿',
       category: 'RPG',
       releaseDate: '2025-09-15',
-      platforms: ['Steam', 'GOG']
+      platforms: ['Steam']
     },
     {
       id: 3,
@@ -44,7 +54,7 @@ function Newgame() {
       price: '1,790฿',
       category: 'Action',
       releaseDate: '2025-10-05',
-      platforms: ['Steam', 'PS Store']
+      platforms: ['Steam']
     },
     {
       id: 4,
@@ -53,12 +63,84 @@ function Newgame() {
       price: '1,490฿',
       category: 'Action',
       releaseDate: '2025-08-20',
-      platforms: ['Steam', 'Epic Games', 'GOG']
+      platforms: ['Steam', 'Epic Games']
+    },
+    {
+      id: 5,
+      title: 'Monster Hunter Wilds',
+      image: monsterImage,
+      price: '1,890฿',
+      category: 'RPG',
+      releaseDate: '2025-12-15',
+      platforms: ['Steam', 'Epic Games']
+    },
+    {
+      id: 6,
+      title: 'Need for Speed Heat',
+      image: needfsImage,
+      price: '1,899฿',
+      category: 'Sports',
+      releaseDate: '2025-11-20',
+      platforms: ['EA']
+    },
+    {
+      id: 7,
+      title: 'Far Cry 6',
+      image: farcry6Image,
+      price: '1,599฿',
+      category: 'Action',
+      releaseDate: '2025-10-30',
+      platforms: ['Ubisoft']
+    },
+    {
+      id: 8,
+      title: 'Sifu',
+      image: sifuIamage,
+      price: '539฿',
+      category: 'Action',
+      releaseDate: '2025-09-25',
+      platforms: ['Epic Games']
+    },
+    {
+      id: 9,
+      title: 'Battlefield 1',
+      image: bf1Image,
+      price: '599฿',
+      category: 'FPS',
+      releaseDate: '2025-11-10',
+      platforms: ['EA']
+    },
+    {
+      id: 10,
+      title: 'EA SPORTS FC 24',
+      image: fifa24Image,
+      price: '1,899฿',
+      category: 'Sports',
+      releaseDate: '2025-12-01',
+      platforms: ['EA']
+    },
+    {
+      id: 11,
+      title: 'Assassins Creed Valhalla',
+      image: assasinImabe,
+      price: '1,599฿',
+      category: 'Action',
+      releaseDate: '2025-09-05',
+      platforms: ['XBOX', 'Ubisoft']
+    },
+    {
+      id: 12,
+      title: 'Watch Dogs Legion',
+      image: watchdogsImage,
+      price: '1,590฿',
+      category: 'Action',
+      releaseDate: '2025-10-15',
+      platforms: ['XBOX', 'Ubisoft']
     }
-  ];
+  ], []);
 
-  const categories = ['all', 'Action', 'RPG', 'Sports'];
-  const platforms = ['all', 'Steam', 'Epic Games', 'GOG', 'PS Store'];
+  const categories = ['all', 'Action', 'RPG', 'Sports', 'FPS'];
+  const platforms = ['all', 'Steam', 'Epic Games', 'EA', 'XBOX', 'Ubisoft'];
 
   // Filter games based on search query, category, and platform
   useEffect(() => {
@@ -80,16 +162,12 @@ function Newgame() {
     }
 
     setFilteredGames(filtered);
-  }, [searchQuery, selectedCategory, selectedPlatform]);
-
-  const handlePlatformClick = (platform, gameTitle) => {
-    alert(`คุณกำลังจะเปิด ${platform} เพื่อดาวน์โหลด ${gameTitle}`);
-  };
+  }, [searchQuery, selectedCategory, selectedPlatform, allGames]);
 
   return (
     <div className="newgame-container">
       <div className="search-section">
-        <h1>เกมใหม่ล่าสุด</h1>
+        <h1>เกมทั้งหมด</h1>
         <p>ค้นพบเกมใหม่ที่น่าตื่นเต้นและพร้อมให้คุณได้สัมผัสประสบการณ์</p>
         
         <div className="search-controls">
@@ -127,50 +205,46 @@ function Newgame() {
         </div>
       </div>
 
-      <div className="games-grid">
-        {filteredGames.length > 0 ? (
-          filteredGames.map(game => (
-            <div key={game.id} className="game-card">
-              <img 
-                src={game.image} 
-                alt={game.title} 
-                className="game-image"
-              />
-              <div className="game-info">
-                <h3 className="game-title">{game.title}</h3>
-                <p className="game-category">
-                  {game.category} • วางจำหน่าย {new Date(game.releaseDate).toLocaleDateString('th-TH')}
-                </p>
-                <p className="game-price">{game.price}</p>
-                <div className="platform-buttons">
-                  {game.platforms.map(platform => (
-                    <button
-                      key={platform}
-                      onClick={() => handlePlatformClick(platform, game.title)}
-                      className={`platform-button ${platform.toLowerCase().split(' ')[0]}`}
-                    >
-                      <i className={`fab fa-${platform.toLowerCase().split(' ')[0]}`}></i>
-                      {platform}
-                    </button>
-                  ))}
-                  <button
-                    onClick={() => handleBuyClick(game)}
-                    className="buy-button"
-                  >
-                    <i className="fas fa-shopping-cart"></i>
-                    เพิ่มลงตะกร้า
-                  </button>
+      <div className="section-with-sidebar">
+        <div className="section-sidebar left">
+          <div className="side-banner" style={{backgroundImage: `url(${walLeftImage})`}}></div>
+        </div>
+
+        <section className="roblox-section">
+          <div className="roblox-grid">
+          {filteredGames.length > 0 ? (
+            filteredGames.map(game => (
+              <div key={game.id} className="roblox-card">
+                <div 
+                  className="roblox-image" 
+                  style={{backgroundImage: `url(${game.image})`}}
+                ></div>
+                <div className="roblox-info">
+                  <div className="roblox-title">{game.title}</div>
+                  <div className="price-button-container">
+                    <div className="roblox-price">฿{game.price.replace('฿', '').replace(',', '')}</div>
+                    <button className="buy-btn" onClick={() => handleBuyClick(game)}>ซื้อเลย</button>
+                  </div>
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="no-results">
+              <i className="fas fa-search fa-3x mb-4"></i>
+              <p>ไม่พบเกมที่คุณค้นหา</p>
             </div>
-          ))
-        ) : (
-          <div className="no-results">
-            <i className="fas fa-search fa-3x mb-4"></i>
-            <p>ไม่พบเกมที่คุณค้นหา</p>
-          </div>
-        )}
+          )}
+        </div>
+        </section>
+
+        <div className="section-sidebar right">
+          <div className="side-banner" style={{backgroundImage: `url(${walRightImage})`}}></div>
+        </div>
       </div>
+
+      <footer className="footer">
+        <p>&copy; Copyright © 2025 i HAVE GAME. All Rights Reserved. For educational purposes in Backend - Frontend only.</p>
+      </footer>
     </div>
   );
 }

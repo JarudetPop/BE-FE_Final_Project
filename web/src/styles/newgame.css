@@ -25,11 +25,14 @@
 }
 
 .newgame-container {
-  padding: 2rem;
-  background-color: #1a1a1a;
+  padding: 30px 50px;
+  background-color: #f5f5f5;
   min-height: calc(100vh - 60px);
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .newgame-container::before {
@@ -57,11 +60,14 @@
     rgba(33, 150, 243, 0.95)
   );
   padding: 3rem 2rem;
-  margin: -2rem -2rem 2rem -2rem;
+  margin-bottom: 2rem;
   color: white;
   text-align: center;
   position: relative;
   overflow: hidden;
+  max-width: 1200px;
+  width: 100%;
+  border-radius: 8px;
 }
 
 /* เพิ่ม bubbles animation */
@@ -339,4 +345,24 @@
   width: 20px;
   height: 20px;
   margin-right: 0.5rem;
+}
+
+.newgame-footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  margin-top: 3rem;
+  color: #666;
+  border-top: 1px solid #ddd;
+  background: #f9f9f9;
+  width: 100%;
+}
+
+.newgame-footer p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.newgame-footer p:first-child {
+  font-weight: 600;
+  color: #333;
 }

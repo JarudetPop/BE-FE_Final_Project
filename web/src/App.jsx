@@ -4,6 +4,7 @@ import Navbar from './components/navbar';
 import HomePage from './pages/Home.jsx';
 import Newgame from './pages/Newgame.jsx';
 import BackOffice from './pages/BackOffice.jsx';
+import HelpSupport from './pages/HelpSupport.jsx';
 import NotFound from './components/NotFound';
 
 function App() {
@@ -16,7 +17,7 @@ function App() {
         <Route path="/popular" element={<NotFound />} />
         <Route path="/promotion" element={<NotFound />} />
         <Route path="/free" element={<NotFound />} />
-        <Route path="/contact" element={<NotFound />} />
+        <Route path="/contact" element={<HelpSupport />} />
         <Route path="/backoffice" element={<BackOffice />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

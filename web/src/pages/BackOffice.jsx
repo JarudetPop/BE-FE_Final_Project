@@ -83,11 +83,13 @@ function BackOffice() {
     price: '', 
     category: categories[0],
     platforms: [],
-    releaseDate: ''
+    releaseDate: '',
+    image: null,
+    imagePreview: null
   });
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, checked } = e.target;
     
     if (name === 'platforms') {
       const platform = value;
@@ -102,6 +104,28 @@ function BackOffice() {
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check if file is an image
+      if (!file.type.startsWith('image/')) {
+        alert('กรุณาเลือกไฟล์รูปภาพเท่านั้น');
+        return;
+      }
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setForm(prev => ({
+          ...prev,
+          image: file,
+          imagePreview: reader.result
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleAdd = () => {
     if (!form.title || !form.price || !form.category || form.platforms.length === 0 || !form.releaseDate) {
       return alert('กรุณากรอกข้อมูลให้ครบถ้วน');
@@ -112,7 +136,8 @@ function BackOffice() {
       price: Number(form.price),
       category: form.category,
       platforms: [...form.platforms],
-      releaseDate: form.releaseDate
+      releaseDate: form.releaseDate,
+      image: form.imagePreview || null
     };
     setGames(prev => [newGame, ...prev]);
     setForm({ 
@@ -120,7 +145,9 @@ function BackOffice() {
       price: '', 
       category: categories[0], 
       platforms: [],
-      releaseDate: ''
+      releaseDate: '',
+      image: null,
+      imagePreview: null
     });
   };
 
@@ -131,7 +158,9 @@ function BackOffice() {
       price: String(game.price),
       category: game.category,
       platforms: [...game.platforms],
-      releaseDate: game.releaseDate
+      releaseDate: game.releaseDate,
+      image: null,
+      imagePreview: game.image || null
     });
   };
 
@@ -147,7 +176,8 @@ function BackOffice() {
             price: Number(form.price),
             category: form.category,
             platforms: [...form.platforms],
-            releaseDate: form.releaseDate
+            releaseDate: form.releaseDate,
+            image: form.imagePreview || item.image
           }
         : item
     ));
@@ -157,7 +187,9 @@ function BackOffice() {
       price: '', 
       category: categories[0], 
       platforms: [],
-      releaseDate: ''
+      releaseDate: '',
+      image: null,
+      imagePreview: null
     });
   };
 
@@ -173,7 +205,9 @@ function BackOffice() {
       price: '', 
       category: categories[0], 
       platforms: [],
-      releaseDate: ''
+      releaseDate: '',
+      image: null,
+      imagePreview: null
     });
   };
 
@@ -235,6 +269,21 @@ function BackOffice() {
               value={form.releaseDate}
               onChange={handleChange}
             />
+          </div>
+
+          <div className="form-group image-upload-group">
+            <label>รูปภาพเกม:</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="image-input"
+            />
+            {form.imagePreview && (
+              <div className="image-preview">
+                <img src={form.imagePreview} alt="Preview" />
+              </div>
+            )}
           </div>
 
           <div className="form-group platforms-group">

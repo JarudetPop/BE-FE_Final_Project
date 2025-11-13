@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-# iHAUE GAMES
+# i HAVE GAMES
 
 A React-based gaming platform website.
 
@@ -67,6 +66,3 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-=======
-# BE-FE_Final_Project
->>>>>>> c00fa9c1180e041fbec6ad3f7328f84dc7536816

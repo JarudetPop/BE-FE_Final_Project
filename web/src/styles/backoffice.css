@@ -1,152 +1,340 @@
 .backoffice-container {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  min-height: 100vh;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
 }
 
 .backoffice-header {
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
   text-align: center;
+  padding: 2rem 0;
 }
 
 .backoffice-header h1 {
-  color: #333;
+  font-size: 2.8rem;
   margin-bottom: 0.5rem;
+  color: #fff;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .backoffice-header p {
-  color: #666;
+  font-size: 1.2rem;
+  color: #b8c1ec;
+  font-weight: 400;
 }
 
 .backoffice-actions {
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  margin-bottom: 1rem;
-  background: #f8f9fa;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  gap: 1.5rem;
+  background: linear-gradient(145deg, #232d4b, #1a2338);
+  padding: 2.5rem;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
 .form-group label {
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: #fff;
+  font-size: 0.95rem;
 }
 
 .form-group input,
 .form-group select {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 0.85rem 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
   font-size: 1rem;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #667eea;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+}
+
+.image-upload-group {
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
+}
+
+.image-input {
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: #b8c1ec;
+}
+
+.image-input:hover {
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.image-preview {
+  margin-top: 1rem;
+  width: 200px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .platforms-group {
-  grid-column: span 2;
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
 }
 
 .platforms-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 0.5rem;
-  padding: 0.5rem;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
 }
 
 .platform-checkbox {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   cursor: pointer;
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #b8c1ec;
+}
+
+.platform-checkbox:hover {
+  background: rgba(102, 126, 234, 0.2);
+  border-color: #667eea;
+  color: #fff;
 }
 
 .platform-checkbox input[type="checkbox"] {
-  margin: 0;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #667eea;
 }
 
 .form-actions {
-  grid-column: span 2;
+  grid-column: 1 / -1;
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn {
-  padding: 0.5rem 1rem;
+  padding: 0.85rem 2rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 .btn.add {
-  background-color: #4CAF50;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
 }
 
 .btn.edit {
-  background-color: #2196F3;
+  background: #2196F3;
   color: white;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.95rem;
 }
 
 .btn.delete {
-  background-color: #f44336;
+  background: #f44336;
   color: white;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.95rem;
 }
 
 .btn.save {
-  background-color: #4CAF50;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
 }
 
 .btn.cancel {
-  background-color: #757575;
+  background: #95a5a6;
   color: white;
 }
 
 .btn:hover {
-  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.backoffice-list {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #232d4b;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .backoffice-list table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .backoffice-list th,
 .backoffice-list td {
-  padding: 1rem;
+  padding: 1.25rem 1.5rem;
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .backoffice-list th {
-  background-color: #f5f5f5;
-  font-weight: bold;
+  background: #764ba2;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.8px;
+}
+
+.backoffice-list td {
+  color: #b8c1ec;
+  font-size: 0.95rem;
 }
 
 .actions-cell {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  align-items: center;
 }
 
-.backoffice-list tr:hover {
-  background-color: #f9f9f9;
+.backoffice-list tbody tr {
+  transition: all 0.2s;
+}
+
+.backoffice-list tbody tr:hover {
+  background-color: rgba(102, 126, 234, 0.1);
+}
+
+.backoffice-list tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.game-thumbnail {
+  width: 80px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.no-image {
+  width: 80px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #7f8c8d;
+}
+
+.backoffice-footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  margin-top: 3rem;
+  color: #b8c1ec;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.backoffice-footer p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.backoffice-footer p:first-child {
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .backoffice-container {
+    padding: 2rem 1rem;
+  }
+  
+  .backoffice-header h1 {
+    font-size: 2rem;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+  }
+  
+  .platforms-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+  
+  .backoffice-list {
+    overflow-x: auto;
+  }
+  
+  .backoffice-list table {
+    min-width: 800px;
+  }
+  
+  .backoffice-footer {
+    font-size: 0.85rem;
+  }
 }

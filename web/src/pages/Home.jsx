@@ -6,7 +6,8 @@ import fm26Image from '../assets/games/fm26.jpg';
 import bdl4Image from '../assets/games/bdl4.jpg';
 import lsaImage from '../assets/games/lsa.jpg';
 import metalImage from '../assets/games/metal.jpg';
-import Navbar from '../components/navbar';
+import walRightImage from '../assets/wal-right.jpg';
+import walLeftImage from '../assets/wal-left.jpg';
 
 import '../App.css';
 
@@ -43,7 +44,6 @@ function Home() {
   // Check login status when component mounts
   useEffect(() => {
     const savedUsername = localStorage.getItem('username');
-    const savedIsAdmin = localStorage.getItem('isAdmin');
     
     if (savedUsername) {
       setIsLoggedIn(true);
@@ -69,10 +69,6 @@ function Home() {
     if (searchTerm) {
       alert(`ค้นหา: ${searchTerm}`);
     }
-  };
-
-  const handleNavClick = (section) => {
-    alert(`คุณกำลังจะไปยังหน้า: ${section}`);
   };
 
   const handleRobloxClick = (gameTitle) => {
@@ -206,16 +202,30 @@ function Home() {
             <button className="platform-btn ubisoft" onClick={() => handlePlatformClick('Ubisoft')}>
               <i className="fas fa-cube"></i> Ubisoft
             </button>
+            <button className="platform-btn xbox" onClick={() => handlePlatformClick('Xbox')}>
+              <i className="fab fa-xbox"></i> Xbox
+            </button>
+            <button className="platform-btn microsoft" onClick={() => handlePlatformClick('Microsoft Store')}>
+              <i className="fab fa-windows"></i> Microsoft Store
+            </button>
           </div>
         </section>
         
         
-        <section className="roblox-section">
-          <div className="section-header">
-            <h2 className="section-title">ออกใหม่</h2>
-            <button className="view-all-btn" onClick={() => window.location.href = '/newgame'}>ดูทั้งหมด</button>
-          </div>
-          <div className="roblox-grid">
+        <div className="section-with-sidebar">
+          <aside className="section-sidebar">
+            <div className="side-banner tall">
+              <img src={walLeftImage} alt="Banner" />
+            </div>
+          </aside>
+
+          <div className="combined-sections">
+            <section className="roblox-section">
+              <div className="section-header">
+                <h2 className="section-title">ออกใหม่</h2>
+                <button className="view-all-btn" onClick={() => window.location.href = '/newgame'}>ดูทั้งหมด</button>
+              </div>
+              <div className="roblox-grid">
             <div className="roblox-card">
               <div className="roblox-image" style={{backgroundImage: `url(${fm26Image})`}}></div>
               <div className="roblox-info">
@@ -258,7 +268,65 @@ function Home() {
             </div>
           </div>
         </section>
-      </main>
+
+        <section className="roblox-section">
+          <div className="section-header">
+            <h2 className="section-title">ยอดนิยม</h2>
+            <button className="view-all-btn" onClick={() => window.location.href = '/newgame'}>ดูทั้งหมด</button>
+          </div>
+          <div className="roblox-grid">
+            <div className="roblox-card">
+              <div className="roblox-image" style={{backgroundImage: `url(${GTA6Image})`}}></div>
+              <div className="roblox-info">
+                <div className="roblox-title">Grand Theft Auto VI</div>
+                <div className="price-button-container">
+                  <div className="roblox-price">฿2590</div>
+                  <button className="buy-btn" onClick={() => handleRobloxClick('Grand Theft Auto VI')}>ซื้อเลย</button>
+                </div>
+              </div>
+            </div>
+            <div className="roblox-card">
+              <div className="roblox-image" style={{backgroundImage: `url(${MGSImage})`}}></div>
+              <div className="roblox-info">
+                <div className="roblox-title">Metal Gear Solid</div>
+                <div className="price-button-container">
+                  <div className="roblox-price">฿1790</div>
+                  <button className="buy-btn" onClick={() => handleRobloxClick('Metal Gear Solid')}>ซื้อเลย</button>
+                </div>
+              </div>
+            </div>
+            <div className="roblox-card">
+              <div className="roblox-image" style={{backgroundImage: `url(${REDMImage})`}}></div>
+              <div className="roblox-info">
+                <div className="roblox-title">Red Dead Redemption</div>
+                <div className="price-button-container">
+                  <div className="roblox-price">฿1990</div>
+                  <button className="buy-btn" onClick={() => handleRobloxClick('Red Dead Redemption')}>ซื้อเลย</button>
+                </div>
+              </div>
+            </div>
+            <div className="roblox-card">
+              <div className="roblox-image" style={{backgroundImage: `url(${fm26Image})`}}></div>
+              <div className="roblox-info">
+                <div className="roblox-title">Football Manager 2026</div>
+                <div className="price-button-container">
+                  <div className="roblox-price">฿1599</div>
+                  <button className="buy-btn" onClick={() => handleRobloxClick('Football Manager 2026')}>ซื้อเลย</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside className="section-sidebar">
+        <div className="side-banner tall">
+          <img src={walRightImage} alt="Banner" />
+        </div>
+      </aside>
+    </div>
+
+    </main>
       
       <footer className="footer">
         <p>&copy; Copyright © 2025 i HAVE GAME. All Rights Reserved. For educational purposes in Backend - Frontend only.</p>
