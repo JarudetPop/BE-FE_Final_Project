@@ -532,7 +532,7 @@ body {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
-  color: #555;
+  color: #000 !important;
 }
 
 .form-group input {
@@ -541,6 +541,22 @@ body {
   border: 1px solid #ddd;
   border-radius: 5px;
   font-size: 16px;
+}
+
+/* Modal specific input styling */
+.modal-content .form-group input {
+  color: #000 !important;
+  background-color: white !important;
+}
+
+.modal-content .form-group input::placeholder {
+  color: #999;
+}
+
+.modal-content .form-group input:focus {
+  background-color: white;
+  color: #000 !important;
+  outline: 1px solid #1a73e8;
 }
 
 .form-actions {
