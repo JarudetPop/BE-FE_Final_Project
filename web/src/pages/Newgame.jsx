@@ -126,6 +126,11 @@ function Newgame() {
                     ))}
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="no-results">
+              <i className="fas fa-search fa-3x mb-4"></i>
+              <p>ไม่พบเกมที่คุณค้นหา</p>
             </div>
           );
         }) : (
@@ -135,6 +140,10 @@ function Newgame() {
           </div>
         )}
       </div>
+
+      <footer className="footer">
+        <p>&copy; Copyright © 2025 i HAVE GAME. All Rights Reserved. For educational purposes in Backend - Frontend only.</p>
+      </footer>
     </div>
   );
 }

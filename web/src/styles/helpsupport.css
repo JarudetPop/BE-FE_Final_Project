@@ -1,0 +1,146 @@
+.help-support-container {
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.contact-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2rem 0;
+}
+
+.contact-header h1 {
+  font-size: 3rem;
+  color: #fff;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.contact-header p {
+  font-size: 1.3rem;
+  color: #b8c1ec;
+}
+
+.contact-content {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  padding: 1rem;
+}
+
+.contact-card {
+  background: linear-gradient(145deg, #232d4b, #1a2338);
+  border-radius: 15px;
+  padding: 2.5rem;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.contact-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+.contact-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.contact-icon i {
+  font-size: 2.5rem;
+  color: #fff;
+}
+
+.contact-card h3 {
+  font-size: 1.5rem;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.contact-card p {
+  font-size: 1.1rem;
+  color: #b8c1ec;
+  margin: 0.5rem 0;
+}
+
+.contact-card a {
+  font-size: 1.1rem;
+  color: #667eea;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+.contact-card a:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+.hours-card {
+  grid-column: 1 / -1;
+  background: linear-gradient(145deg, #667eea, #764ba2);
+  max-width: 100%;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hours-card h3,
+.hours-card p {
+  color: #fff;
+}
+
+.hours-time {
+  font-size: 1.5rem !important;
+  font-weight: bold;
+  margin-top: 1rem !important;
+}
+
+@media (max-width: 1024px) {
+  .hours-card {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-header h1 {
+    font-size: 2rem;
+  }
+  
+  .contact-header p {
+    font-size: 1.1rem;
+  }
+  
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .contact-card {
+    padding: 2rem;
+  }
+  
+  .contact-icon {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .contact-icon i {
+    font-size: 2rem;
+  }
+}
