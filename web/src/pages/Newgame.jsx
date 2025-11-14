@@ -9,7 +9,7 @@ function Newgame() {
   const [selectedPlatform, setSelectedPlatform] = useState('all');
   const [allGames, setAllGames] = useState([]);
 
-  // ✅ ดึงเกมล่าสุดจาก Backend
+  // ดึงเกมล่าสุดจาก Backend
   useEffect(() => {
     fetch('http://localhost:8080/api/games/latest')
       .then(res => res.json())
@@ -20,7 +20,7 @@ function Newgame() {
       .catch(err => console.error("Fetch Latest Games Error:", err));
   }, []);
 
-  // ✅ แพลตฟอร์มเรียงลำดับ
+  // เรียงแพลตฟอร์ม
   const platformOrder = [
     "PC (Steam)",
     "PC (Epic)",
@@ -39,7 +39,7 @@ function Newgame() {
       return platformOrder.indexOf(a) - platformOrder.indexOf(b);
     });
 
-  // ✅ Filter
+  // Filter
   useEffect(() => {
     const now = new Date();
     const oneMonthAgo = new Date();
@@ -47,7 +47,7 @@ function Newgame() {
 
     let result = [...allGames];
 
-    // ✅ เงื่อนไขแสดงเฉพาะเกมที่ยังไม่ออก หรือ ออกไม่เกิน 1 เดือน
+    // เฉพาะเกมที่ยังไม่ออก หรือ ออกไม่เกิน 1 เดือน
     result = result.filter(game => {
       const releaseDate = new Date(game.release_date);
       return releaseDate >= oneMonthAgo || releaseDate > now;
@@ -73,6 +73,8 @@ function Newgame() {
 
   return (
     <div className="newgame-container">
+
+      {/* ▶ Search Section */}
       <div className="search-section">
         <h1>เกมใหม่ล่าสุด</h1>
         <p>เลือกดูเกมที่เพิ่งวางขายหรือกำลังจะออกเร็ว ๆ นี้</p>
@@ -88,52 +90,69 @@ function Newgame() {
             <i className="fas fa-search"></i>
           </div>
 
-          <select className="filter-select" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
-            {categories.map(cat => <option key={cat} value={cat}>{cat === 'all' ? 'ทุกหมวดหมู่' : cat}</option>)}
+          <select
+            className="filter-select"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            {categories.map(cat => (
+              <option key={cat} value={cat}>
+                {cat === 'all' ? 'ทุกหมวดหมู่' : cat}
+              </option>
+            ))}
           </select>
 
-          <select className="filter-select" value={selectedPlatform} onChange={(e) => setSelectedPlatform(e.target.value)}>
-            {platforms.map(plat => <option key={plat} value={plat}>{plat === 'all' ? 'ทุกแพลตฟอร์ม' : plat}</option>)}
+          <select
+            className="filter-select"
+            value={selectedPlatform}
+            onChange={(e) => setSelectedPlatform(e.target.value)}
+          >
+            {platforms.map(plat => (
+              <option key={plat} value={plat}>
+                {plat === 'all' ? 'ทุกแพลตฟอร์ม' : plat}
+              </option>
+            ))}
           </select>
         </div>
       </div>
 
+      {/* ▶ Games Grid */}
       <div className="games-grid">
-        {filteredGames.length > 0 ? filteredGames.map(game => {
-          const releaseDate = new Date(game.release_date);
-          const now = new Date();
-          const isUpcoming = releaseDate > now; // ✅ เกมยังไม่ออก
+        {filteredGames.length > 0 ? (
+          filteredGames.map(game => {
+            const releaseDate = new Date(game.release_date);
+            const now = new Date();
+            const isUpcoming = releaseDate > now;
 
-          return (
-            <div key={game.game_id} className="game-card">
-              <div className="image-wrapper">
-                <img src={game.image_url} alt={game.title} className="game-image" />
-                {isUpcoming && <span className="coming-soon-badge">COMING SOON</span>}
-              </div>
-              <div className="game-info">
-                <h3 className="game-title">{game.title}</h3>
-                <p className="game-category">
-                  {game.category_name} • วางจำหน่าย {releaseDate.toLocaleDateString('th-TH')}
-                </p>
-                <p className="game-price">฿{game.price}</p>
-                <div className="platform-buttons">
-                  {game.platforms
-                    .sort((a, b) => platformOrder.indexOf(a) - platformOrder.indexOf(b))
-                    .map(platform => (
-                      <button key={platform} className="platform-button">
-                        {platform}
-                      </button>
-                    ))}
+            return (
+              <div key={game.game_id} className="game-card">
+                <div className="image-wrapper">
+                  <img src={game.image_url} alt={game.title} className="game-image" />
+                  {isUpcoming && <span className="coming-soon-badge">COMING SOON</span>}
+                </div>
+
+                <div className="game-info">
+                  <h3 className="game-title">{game.title}</h3>
+                  <p className="game-category">
+                    {game.category_name} • วางจำหน่าย {releaseDate.toLocaleDateString('th-TH')}
+                  </p>
+
+                  <p className="game-price">฿{game.price}</p>
+
+                  <div className="platform-buttons">
+                    {game.platforms
+                      .sort((a, b) => platformOrder.indexOf(a) - platformOrder.indexOf(b))
+                      .map(platform => (
+                        <button key={platform} className="platform-button">
+                          {platform}
+                        </button>
+                      ))}
+                  </div>
                 </div>
               </div>
-            ))
-          ) : (
-            <div className="no-results">
-              <i className="fas fa-search fa-3x mb-4"></i>
-              <p>ไม่พบเกมที่คุณค้นหา</p>
-            </div>
-          );
-        }) : (
+            );
+          })
+        ) : (
           <div className="no-results">
             <i className="fas fa-search fa-3x mb-4"></i>
             <p>ไม่พบเกมที่คุณค้นหา</p>
@@ -141,8 +160,12 @@ function Newgame() {
         )}
       </div>
 
+      {/* ▶ Footer */}
       <footer className="footer">
-        <p>&copy; Copyright © 2025 i HAVE GAME. All Rights Reserved. For educational purposes in Backend - Frontend only.</p>
+        <p>
+          &copy; Copyright © 2025 i HAVE GAME.
+          All Rights Reserved. For educational purposes in Backend - Frontend only.
+        </p>
       </footer>
     </div>
   );

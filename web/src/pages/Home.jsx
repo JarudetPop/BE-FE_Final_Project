@@ -13,26 +13,23 @@ function Home() {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [username, setUsername] = useState(() => localStorage.getItem('username') || '');
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [gameList, setGameList] = useState([]); // ใช้สำหรับแสดงเกมทั้งหมดเท่านั้น
-  const [slides, setSlides] = useState([]); // ✅ slides สำหรับ carousel (ดึงจาก API)
+  const [gameList, setGameList] = useState([]);
+  const [slides, setSlides] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const gamesPerPage = 8;
 
-  // ✅ ดึงข้อมูลเกมจาก Backend
   useEffect(() => {
     fetch('http://localhost:8080/api/games')
       .then(res => res.json())
       .then(data => {
         setGameList(data);
 
-        // 🔥 ดึงมาแค่ 5-7 เกมจาก API สำหรับสไลด์
         const randomSlides = data.sort(() => 0.5 - Math.random()).slice(0, 7).map(game => ({
           url: game.image_url || "https://via.placeholder.com/1200x500?text=No+Image",
           title: game.title,
           description: game.description || "เกมสุดมันส์ ห้ามพลาด!"
         }));
 
-        // ถ้า API ว่าง — fallback เป็นภาพใน assets เดิม
         if (randomSlides.length > 0) {
           setSlides(randomSlides);
         } else {
@@ -45,7 +42,6 @@ function Home() {
       })
       .catch(err => {
         console.error("Fetch Error:", err);
-        // ถ้า fetch พัง ให้ fallback เป็นภาพเดิม
         setSlides([
           { url: GTA6Image, title: 'Grand Theft Auto VI', description: 'The next generation of the legendary game series' },
           { url: MGSImage, title: 'Metal Gear Solid', description: 'Classic stealth action game' },
@@ -54,7 +50,6 @@ function Home() {
       });
   }, []);
 
-  // ✅ Auto Slide
   useEffect(() => {
     if (slides.length === 0) return;
     const interval = setInterval(() => {
@@ -63,7 +58,6 @@ function Home() {
     return () => clearInterval(interval);
   }, [slides]);
 
-  // ✅ Login Logic
   const handleLogin = (e) => {
     e.preventDefault();
     const formUsername = e.target.elements[0].value;
@@ -105,7 +99,6 @@ function Home() {
     }
   };
 
-  // ✅ Pagination (ส่วนนี้ไม่แตะ)
   const indexOfLastGame = currentPage * gamesPerPage;
   const indexOfFirstGame = indexOfLastGame - gamesPerPage;
   const currentGames = gameList.slice(indexOfFirstGame, indexOfLastGame);
@@ -116,6 +109,7 @@ function Home() {
 
   return (
     <div className="app">
+
       {/* HEADER */}
       <header className="header">
         <div className="logo">
@@ -137,37 +131,38 @@ function Home() {
         </div>
       </header>
 
-<main className="main-content">
-  <section className="game-showcase">
-    <div className="carousel">
-      <div className="carousel-inner">
-        {gameList.length > 0 ? (
-          gameList.slice(0, 7).map((game, index) => (
-            <div
-              key={index}
-              className={`carousel-item ${index === currentSlide ? 'active' : ''}`}
-              style={{
-                backgroundImage: `url(${game.image_url || "https://via.placeholder.com/1920x600?text=No+Image"})`,
-              }}
-            >
-              <div className="carousel-caption">
-                <h3>{game.title}</h3>
-                <p>{game.description || 'เกมสุดมันส์ ห้ามพลาด!'}</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="carousel-item active" style={{ backgroundColor: '#333' }}>
-            <div className="carousel-caption">
-              <h3>กำลังโหลด...</h3>
+      {/* MAIN CONTENT */}
+      <main className="main-content">
+        <section className="game-showcase">
+          <div className="carousel">
+            <div className="carousel-inner">
+              {gameList.length > 0 ? (
+                gameList.slice(0, 7).map((game, index) => (
+                  <div
+                    key={index}
+                    className={`carousel-item ${index === currentSlide ? 'active' : ''}`}
+                    style={{
+                      backgroundImage: `url(${game.image_url || "https://via.placeholder.com/1920x600?text=No+Image"})`,
+                    }}
+                  >
+                    <div className="carousel-caption">
+                      <h3>{game.title}</h3>
+                      <p>{game.description || 'เกมสุดมันส์ ห้ามพลาด!'}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="carousel-item active" style={{ backgroundColor: '#333' }}>
+                  <div className="carousel-caption">
+                    <h3>กำลังโหลด...</h3>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
-    </div>
-  </section>
+        </section>
 
-        {/* ✅ ส่วนรายชื่อเกมทั้งหมด — ไม่แตะเลย */}
+        {/* GAME LIST */}
         <section className="roblox-section">
           <div className="section-header">
             <h2 className="section-title">เกมทั้งหมด</h2>
@@ -206,8 +201,9 @@ function Home() {
         </section>
       </main>
 
+      {/* FOOTER (แก้ปัญหา JSX root ตรงนี้) */}
       <footer className="footer">
-        <p>© 2025 i HAVE GAME. All Rights Reserved.</p>
+        <p>&copy; 2025 i HAVE GAME. All Rights Reserved. For educational purposes only.</p>
       </footer>
 
       {/* LOGIN MODAL */}
@@ -263,6 +259,7 @@ function Home() {
           </div>
         </div>
       )}
+
     </div>
   );
 }
