@@ -346,23 +346,19 @@
   height: 20px;
   margin-right: 0.5rem;
 }
-
-.newgame-footer {
-  text-align: center;
-  padding: 2rem 1rem;
-  margin-top: 3rem;
-  color: #666;
-  border-top: 1px solid #ddd;
-  background: #f9f9f9;
-  width: 100%;
+.image-wrapper {
+  position: relative;
 }
 
-.newgame-footer p {
-  margin: 0.5rem 0;
-  font-size: 0.9rem;
-}
-
-.newgame-footer p:first-child {
-  font-weight: 600;
-  color: #333;
+.coming-soon-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: linear-gradient(45deg, #ff3c3c, #ff9800);
+  color: white;
+  font-weight: bold;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }

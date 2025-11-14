@@ -1,0 +1,358 @@
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes floatingBubbles {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.newgame-container {
+  padding: 2rem;
+  background-color: #1a1a1a;
+  min-height: calc(100vh - 60px);
+  position: relative;
+  overflow: hidden;
+}
+
+.newgame-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    #4CAF50,
+    #2196F3,
+    #9C27B0,
+    #4CAF50
+  );
+  background-size: 400% 400%;
+  animation: gradientAnimation 15s ease infinite;
+  opacity: 0.1;
+}
+
+.search-section {
+  background: linear-gradient(135deg, 
+    rgba(213, 217, 213, 0.95), 
+    rgba(33, 150, 243, 0.95)
+  );
+  padding: 3rem 2rem;
+  margin: -2rem -2rem 2rem -2rem;
+  color: white;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* เพิ่ม bubbles animation */
+.search-section::before,
+.search-section::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: floatingBubbles 8s linear infinite;
+}
+
+.search-section::before {
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.search-section::after {
+  right: 10%;
+  animation-delay: 4s;
+}
+
+/* เพิ่ม bubbles เพิ่มเติม */
+@media (min-width: 768px) {
+  .search-section::before {
+    box-shadow: 
+      100px 20px 0 rgba(255, 255, 255, 0.1),
+      200px 40px 0 rgba(255, 255, 255, 0.1),
+      300px 60px 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  .search-section::after {
+    box-shadow: 
+      -100px 20px 0 rgba(255, 255, 255, 0.1),
+      -200px 40px 0 rgba(255, 255, 255, 0.1),
+      -300px 60px 0 rgba(255, 255, 255, 0.1);
+  }
+}
+
+.search-section h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: bold;
+}
+
+.search-section p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.search-controls {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .search-controls {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+}
+
+.search-input {
+  background: white;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.search-input input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  margin-right: 1rem;
+}
+
+.search-input i {
+  color: #666;
+}
+
+.filter-select {
+  background: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Tablet */
+@media (min-width: 640px) {
+  .games-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .games-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1280px) {
+  .games-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.game-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1),
+              0 0 0 1px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 12px;
+  background: linear-gradient(
+    45deg,
+    rgba(76, 175, 80, 0.1),
+    rgba(33, 150, 243, 0.1)
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.game-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2),
+              0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.game-card:hover::before {
+  opacity: 1;
+}
+
+.game-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.game-info {
+  padding: 1.5rem;
+}
+
+.game-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.game-category {
+  color: #666;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.game-price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #4CAF50;
+  margin-bottom: 1rem;
+}
+
+.platform-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.platform-button {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.platform-button.steam {
+  background-color: #171a21;
+  color: white;
+}
+
+.platform-button.epic {
+  background-color: #2f2f2f;
+  color: white;
+}
+
+.platform-button.gog {
+  background-color: #6d28d9;
+  color: white;
+}
+
+.platform-button:hover {
+  opacity: 0.9;
+}
+
+.buy-button {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+}
+
+.buy-button i {
+  margin-right: 0.5rem;
+}
+
+.buy-button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.buy-button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.no-results {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 1.2rem;
+  grid-column: 1 / -1;
+}
+
+.platform-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.5rem;
+}
+.image-wrapper {
+  position: relative;
+}
+
+.coming-soon-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: linear-gradient(45deg, #ff3c3c, #ff9800);
+  color: white;
+  font-weight: bold;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}

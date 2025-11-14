@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import '../App.css';
 import GTA6Image from '../assets/GTA6.jpg';
 import MGSImage from '../assets/MGS.jpg';
 import REDMImage from '../assets/REDM.jpg';
-import fm26Image from '../assets/games/fm26.jpg';
-import bdl4Image from '../assets/games/bdl4.jpg';
-import lsaImage from '../assets/games/lsa.jpg';
-import metalImage from '../assets/games/metal.jpg';
-import walRightImage from '../assets/wal-right.jpg';
-import walLeftImage from '../assets/wal-left.jpg';
-
-import '../App.css';
 
 function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    // Check if user is already logged in from localStorage
     const username = localStorage.getItem('username');
     return !!username;
   });
@@ -21,79 +13,73 @@ function Home() {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [username, setUsername] = useState(() => localStorage.getItem('username') || '');
   const [currentSlide, setCurrentSlide] = useState(0);
-  
-  // Sample images for the carousel
-  const slides = [
-    { 
-      url: GTA6Image, 
-      title: 'Grand Theft Auto VI',
-      description: 'The next generation of the legendary game series'
-    },
-    { 
-      url: MGSImage, 
-      title: 'Metal Gear Solid',
-      description: 'Classic stealth action game'
-    },
-    { 
-      url: REDMImage, 
-      title: 'Red Dead Redemption',
-      description: 'Wild West adventure'
-    }
-  ];
-  
-  // Check login status when component mounts
+  const [gameList, setGameList] = useState([]); // ใช้สำหรับแสดงเกมทั้งหมดเท่านั้น
+  const [slides, setSlides] = useState([]); // ✅ slides สำหรับ carousel (ดึงจาก API)
+  const [currentPage, setCurrentPage] = useState(1);
+  const gamesPerPage = 8;
+
+  // ✅ ดึงข้อมูลเกมจาก Backend
   useEffect(() => {
-    const savedUsername = localStorage.getItem('username');
-    
-    if (savedUsername) {
-      setIsLoggedIn(true);
-      setUsername(savedUsername);
-    }
+    fetch('http://localhost:8080/api/games')
+      .then(res => res.json())
+      .then(data => {
+        setGameList(data);
+
+        // 🔥 ดึงมาแค่ 5-7 เกมจาก API สำหรับสไลด์
+        const randomSlides = data.sort(() => 0.5 - Math.random()).slice(0, 7).map(game => ({
+          url: game.image_url || "https://via.placeholder.com/1200x500?text=No+Image",
+          title: game.title,
+          description: game.description || "เกมสุดมันส์ ห้ามพลาด!"
+        }));
+
+        // ถ้า API ว่าง — fallback เป็นภาพใน assets เดิม
+        if (randomSlides.length > 0) {
+          setSlides(randomSlides);
+        } else {
+          setSlides([
+            { url: GTA6Image, title: 'Grand Theft Auto VI', description: 'The next generation of the legendary game series' },
+            { url: MGSImage, title: 'Metal Gear Solid', description: 'Classic stealth action game' },
+            { url: REDMImage, title: 'Red Dead Redemption', description: 'Wild West adventure' }
+          ]);
+        }
+      })
+      .catch(err => {
+        console.error("Fetch Error:", err);
+        // ถ้า fetch พัง ให้ fallback เป็นภาพเดิม
+        setSlides([
+          { url: GTA6Image, title: 'Grand Theft Auto VI', description: 'The next generation of the legendary game series' },
+          { url: MGSImage, title: 'Metal Gear Solid', description: 'Classic stealth action game' },
+          { url: REDMImage, title: 'Red Dead Redemption', description: 'Wild West adventure' }
+        ]);
+      });
   }, []);
 
-  // Auto-advance the carousel every 5 seconds
+  // ✅ Auto Slide
   useEffect(() => {
+    if (slides.length === 0) return;
     const interval = setInterval(() => {
       setCurrentSlide(prev => (prev === slides.length - 1 ? 0 : prev + 1));
     }, 5000);
-    
     return () => clearInterval(interval);
-  }, [slides.length]);
+  }, [slides]);
 
-  const handlePlatformClick = (platform) => {
-    alert(`คุณกำลังจะเปิด ${platform} เพื่อดาวน์โหลดเกม`);
-  };
-
-  const handleSearch = () => {
-    const searchTerm = document.querySelector('.search-bar input').value;
-    if (searchTerm) {
-      alert(`ค้นหา: ${searchTerm}`);
-    }
-  };
-
-  const handleRobloxClick = (gameTitle) => {
-    alert(`คุณกำลังจะเปิดเกม: ${gameTitle}`);
-  };
-
+  // ✅ Login Logic
   const handleLogin = (e) => {
     e.preventDefault();
     const formUsername = e.target.elements[0].value;
     const formPassword = e.target.elements[1].value;
-    
+
     if (formUsername === 'Admin' && formPassword === 'Admin123') {
       setIsLoggedIn(true);
       setUsername('Admin');
       localStorage.setItem('username', 'Admin');
       localStorage.setItem('isAdmin', 'true');
       setShowLoginModal(false);
-      // เพิ่มการหน่วงเวลาเล็กน้อยก่อน redirect
-      setTimeout(() => {
-        window.location.href = '/backoffice';
-      }, 100);
+      setTimeout(() => window.location.href = '/backoffice', 100);
     } else {
       setIsLoggedIn(true);
-      setUsername('ผู้ใช้');
-      localStorage.setItem('username', 'ผู้ใช้');
+      setUsername(formUsername || 'ผู้ใช้');
+      localStorage.setItem('username', formUsername || 'ผู้ใช้');
       localStorage.setItem('isAdmin', 'false');
       setShowLoginModal(false);
     }
@@ -101,9 +87,9 @@ function Home() {
 
   const handleSignup = (e) => {
     e.preventDefault();
-    // In a real app, you would create a new user here
     setIsLoggedIn(true);
     setUsername('ผู้ใช้ใหม่');
+    localStorage.setItem('username', 'ผู้ใช้ใหม่');
     setShowSignupModal(false);
   };
 
@@ -112,26 +98,29 @@ function Home() {
     setUsername('');
     localStorage.removeItem('username');
     localStorage.removeItem('isAdmin');
-    // Dispatch logout event
     window.dispatchEvent(new Event('logout'));
-    // Redirect to home if on backoffice page
+
     if (window.location.pathname === '/backoffice') {
       window.location.href = '/';
     }
   };
 
+  // ✅ Pagination (ส่วนนี้ไม่แตะ)
+  const indexOfLastGame = currentPage * gamesPerPage;
+  const indexOfFirstGame = indexOfLastGame - gamesPerPage;
+  const currentGames = gameList.slice(indexOfFirstGame, indexOfLastGame);
+  const totalPages = Math.ceil(gameList.length / gamesPerPage);
+
+  const goToNextPage = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
+  const goToPrevPage = () => currentPage > 1 && setCurrentPage(currentPage - 1);
+
   return (
     <div className="app">
+      {/* HEADER */}
       <header className="header">
         <div className="logo">
           <img src="/logoWEB.png" alt="Logo" className="logo-icon" />
           <span className="logo-text">i HAVE GAMES.com</span>
-        </div>
-        <div className="search-bar">
-          <input type="text" placeholder="ค้นหาเกม..." />
-          <button onClick={handleSearch}>
-            <i className="fas fa-search"></i>
-          </button>
         </div>
         <div className="auth-buttons">
           {isLoggedIn ? (
@@ -148,190 +137,80 @@ function Home() {
         </div>
       </header>
 
-      <main className="main-content">
-        <section className="game-showcase">
-          <div className="game-image">
-            <div className="carousel">
-              <div className="carousel-inner">
-                {slides.map((slide, index) => (
-                  <div 
-                    key={index} 
-                    className={`carousel-item ${index === currentSlide ? 'active' : ''}`}
-                    style={{backgroundImage: `url(${slide.url})`}}
-                  >
-                    <div className="carousel-caption">
-                      <h3>{slide.title}</h3>
-                      <p>{slide.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              {/* Carousel controls */}
-              <button 
-                className="carousel-control prev" 
-                onClick={() => setCurrentSlide(currentSlide === 0 ? slides.length - 1 : currentSlide - 1)}
-              >
-              </button>
-              <button 
-                className="carousel-control next" 
-                onClick={() => setCurrentSlide(currentSlide === slides.length - 1 ? 0 : currentSlide + 1)}
-              >
-                &#10095;
-              </button>
-              
-              {/* Carousel indicators */}
-              <div className="carousel-indicators">
-                {slides.map((_, index) => (
-                  <span
-                    key={index}
-                    className={`indicator ${index === currentSlide ? 'active' : ''}`}
-                    onClick={() => setCurrentSlide(index)}
-                  ></span>
-                ))}
+<main className="main-content">
+  <section className="game-showcase">
+    <div className="carousel">
+      <div className="carousel-inner">
+        {gameList.length > 0 ? (
+          gameList.slice(0, 7).map((game, index) => (
+            <div
+              key={index}
+              className={`carousel-item ${index === currentSlide ? 'active' : ''}`}
+              style={{
+                backgroundImage: `url(${game.image_url || "https://via.placeholder.com/1920x600?text=No+Image"})`,
+              }}
+            >
+              <div className="carousel-caption">
+                <h3>{game.title}</h3>
+                <p>{game.description || 'เกมสุดมันส์ ห้ามพลาด!'}</p>
               </div>
             </div>
-          </div>
-          <div className="platform-buttons">
-            <button className="platform-btn steam" onClick={() => handlePlatformClick('Steam')}>
-              <i className="fab fa-steam"></i> Steam
-            </button>
-            <button className="platform-btn ea-app" onClick={() => handlePlatformClick('EA app')}>
-              <i className="fas fa-gamepad"></i> EA app
-            </button>
-            <button className="platform-btn ubisoft" onClick={() => handlePlatformClick('Ubisoft')}>
-              <i className="fas fa-cube"></i> Ubisoft
-            </button>
-            <button className="platform-btn xbox" onClick={() => handlePlatformClick('Xbox')}>
-              <i className="fab fa-xbox"></i> Xbox
-            </button>
-            <button className="platform-btn microsoft" onClick={() => handlePlatformClick('Microsoft Store')}>
-              <i className="fab fa-windows"></i> Microsoft Store
-            </button>
-          </div>
-        </section>
-        
-        
-        <div className="section-with-sidebar">
-          <aside className="section-sidebar">
-            <div className="side-banner tall">
-              <img src={walLeftImage} alt="Banner" />
+          ))
+        ) : (
+          <div className="carousel-item active" style={{ backgroundColor: '#333' }}>
+            <div className="carousel-caption">
+              <h3>กำลังโหลด...</h3>
             </div>
-          </aside>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
 
-          <div className="combined-sections">
-            <section className="roblox-section">
-              <div className="section-header">
-                <h2 className="section-title">ออกใหม่</h2>
-                <button className="view-all-btn" onClick={() => window.location.href = '/newgame'}>ดูทั้งหมด</button>
-              </div>
-              <div className="roblox-grid">
-            <div className="roblox-card">
-              <div className="roblox-image" style={{backgroundImage: `url(${fm26Image})`}}></div>
-              <div className="roblox-info">
-                <div className="roblox-title">Football Manager 2026</div>
-                <div className="price-button-container">
-                  <div className="roblox-price">฿1599</div>
-                  <button className="buy-btn" onClick={() => handleRobloxClick('Football Manager 2026')}>ซื้อเลย</button>
-                </div>
-              </div>
-            </div>
-            <div className="roblox-card">
-              <div className="roblox-image" style={{backgroundImage: `url(${bdl4Image})`}}></div>
-              <div className="roblox-info">
-                <div className="roblox-title">Borderlands 4</div>
-                <div className="price-button-container">
-                  <div className="roblox-price">฿1890</div>
-                  <button className="buy-btn" onClick={() => handleRobloxClick('Borderlands 4')}>ซื้อเลย</button>
-                </div>
-              </div>
-            </div>
-            <div className="roblox-card">
-              <div className="roblox-image" style={{backgroundImage: `url(${lsaImage})`}}></div>
-              <div className="roblox-info">
-                <div className="roblox-title">Lost Soul Aside</div>
-                <div className="price-button-container">
-                  <div className="roblox-price">฿1899</div>
-                  <button className="buy-btn" onClick={() => handleRobloxClick('Lost Soul Aside')}>ซื้อเลย</button>
-                </div>
-              </div>
-            </div>
-            <div className="roblox-card">
-              <div className="roblox-image" style={{backgroundImage: `url(${metalImage})`}}></div>
-              <div className="roblox-info">
-                <div className="roblox-title">Metal Gear Solid Δ: Snake Eater</div>
-                <div className="price-button-container">
-                  <div className="roblox-price">฿1899</div>
-                  <button className="buy-btn" onClick={() => handleRobloxClick('Metal Gear Solid Δ: Snake Eater')}>ซื้อเลย</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
+        {/* ✅ ส่วนรายชื่อเกมทั้งหมด — ไม่แตะเลย */}
         <section className="roblox-section">
           <div className="section-header">
-            <h2 className="section-title">ยอดนิยม</h2>
-            <button className="view-all-btn" onClick={() => window.location.href = '/newgame'}>ดูทั้งหมด</button>
+            <h2 className="section-title">เกมทั้งหมด</h2>
           </div>
+
           <div className="roblox-grid">
-            <div className="roblox-card">
-              <div className="roblox-image" style={{backgroundImage: `url(${GTA6Image})`}}></div>
-              <div className="roblox-info">
-                <div className="roblox-title">Grand Theft Auto VI</div>
-                <div className="price-button-container">
-                  <div className="roblox-price">฿2590</div>
-                  <button className="buy-btn" onClick={() => handleRobloxClick('Grand Theft Auto VI')}>ซื้อเลย</button>
+            {gameList.length === 0 ? (
+              <p>กำลังโหลดข้อมูล...</p>
+            ) : (
+              currentGames.map((game) => (
+                <div className="roblox-card" key={game.game_id}>
+                  <div className="roblox-image-container">
+                    <img
+                      src={game.image_url || "https://via.placeholder.com/300x400?text=No+Image"}
+                      alt={game.title}
+                      className="roblox-image"
+                    />
+                  </div>
+                  <div className="roblox-info">
+                    <div className="roblox-title">{game.title}</div>
+                    <div className="roblox-price">฿{game.price}</div>
+                    <div className="platforms">
+                      <small>{Array.isArray(game.platforms) ? game.platforms.join(", ") : game.platforms}</small>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="roblox-card">
-              <div className="roblox-image" style={{backgroundImage: `url(${MGSImage})`}}></div>
-              <div className="roblox-info">
-                <div className="roblox-title">Metal Gear Solid</div>
-                <div className="price-button-container">
-                  <div className="roblox-price">฿1790</div>
-                  <button className="buy-btn" onClick={() => handleRobloxClick('Metal Gear Solid')}>ซื้อเลย</button>
-                </div>
-              </div>
-            </div>
-            <div className="roblox-card">
-              <div className="roblox-image" style={{backgroundImage: `url(${REDMImage})`}}></div>
-              <div className="roblox-info">
-                <div className="roblox-title">Red Dead Redemption</div>
-                <div className="price-button-container">
-                  <div className="roblox-price">฿1990</div>
-                  <button className="buy-btn" onClick={() => handleRobloxClick('Red Dead Redemption')}>ซื้อเลย</button>
-                </div>
-              </div>
-            </div>
-            <div className="roblox-card">
-              <div className="roblox-image" style={{backgroundImage: `url(${fm26Image})`}}></div>
-              <div className="roblox-info">
-                <div className="roblox-title">Football Manager 2026</div>
-                <div className="price-button-container">
-                  <div className="roblox-price">฿1599</div>
-                  <button className="buy-btn" onClick={() => handleRobloxClick('Football Manager 2026')}>ซื้อเลย</button>
-                </div>
-              </div>
-            </div>
+              ))
+            )}
+          </div>
+
+          <div className="pagination">
+            <button onClick={goToPrevPage} disabled={currentPage === 1}>ย้อนกลับ</button>
+            <span>หน้า {currentPage} จาก {totalPages}</span>
+            <button onClick={goToNextPage} disabled={currentPage === totalPages}>ถัดไป</button>
           </div>
         </section>
-      </div>
+      </main>
 
-      <aside className="section-sidebar">
-        <div className="side-banner tall">
-          <img src={walRightImage} alt="Banner" />
-        </div>
-      </aside>
-    </div>
-
-    </main>
-      
       <footer className="footer">
-        <p>&copy; Copyright © 2025 i HAVE GAME. All Rights Reserved. For educational purposes in Backend - Frontend only.</p>
+        <p>© 2025 i HAVE GAME. All Rights Reserved.</p>
       </footer>
-      
+
+      {/* LOGIN MODAL */}
       {showLoginModal && (
         <div className="modal-overlay" onClick={() => setShowLoginModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -353,7 +232,8 @@ function Home() {
           </div>
         </div>
       )}
-      
+
+      {/* SIGNUP MODAL */}
       {showSignupModal && (
         <div className="modal-overlay" onClick={() => setShowSignupModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>

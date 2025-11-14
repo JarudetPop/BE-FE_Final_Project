@@ -6,6 +6,7 @@ import Newgame from './pages/Newgame.jsx';
 import BackOffice from './pages/BackOffice.jsx';
 import HelpSupport from './pages/HelpSupport.jsx';
 import NotFound from './components/NotFound';
+import Popular from './pages/Popular.jsx';
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/newgame" element={<Newgame />} />
-        <Route path="/popular" element={<NotFound />} />
+        <Route path="/popular" element={<Popular />} />
         <Route path="/promotion" element={<NotFound />} />
         <Route path="/free" element={<NotFound />} />
         <Route path="/contact" element={<HelpSupport />} />
