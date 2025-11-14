@@ -41,15 +41,6 @@ function Navbar() {
         <li className={location.pathname === '/newgame' ? 'active' : ''}>
           <Link to="/newgame">เกมใหม่</Link>
         </li>
-        <li className={location.pathname === '/popular' ? 'active' : ''}>
-          <Link to="/popular">เกมยอดนิยม</Link>
-        </li>
-        <li className={location.pathname === '/promotion' ? 'active' : ''}>
-          <Link to="/promotion">โปรโมชั่น</Link>
-        </li>
-        <li className={location.pathname === '/free' ? 'active' : ''}>
-          <Link to="/free">เกมฟรี</Link>
-        </li>
         <li className={location.pathname === '/contact' ? 'active' : ''}>
           <Link to="/contact">ติดต่อเรา</Link>
         </li>
