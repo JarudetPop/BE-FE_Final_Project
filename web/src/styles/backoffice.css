@@ -24,6 +24,31 @@
   font-weight: 400;
 }
 
+/* Error and Loading Messages */
+.error-message {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  padding: 1rem 1.5rem;
+  background: rgba(211, 47, 47, 0.1);
+  border: 2px solid rgba(211, 47, 47, 0.3);
+  border-radius: 8px;
+  color: #ff6b6b;
+  text-align: center;
+}
+
+.loading-message {
+  text-align: center;
+  padding: 3rem;
+  color: #b8c1ec;
+  font-size: 1.2rem;
+}
+
+.form-group small {
+  color: #b8c1ec;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
 .backoffice-actions {
   margin-bottom: 3rem;
   max-width: 1200px;

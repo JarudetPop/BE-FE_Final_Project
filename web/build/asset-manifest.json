@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/static/css/main.fdcf740f.css",
+    "main.js": "/static/js/main.3a65a795.js",
+    "static/media/GTA6.jpg": "/static/media/GTA6.a843f3d33040e598337f.jpg",
+    "static/media/MGS.jpg": "/static/media/MGS.6e98fcc7b5b78a98050a.jpg",
+    "static/media/lsa.jpg": "/static/media/lsa.ba6d21adcdc4ab16431c.jpg",
+    "static/media/fm26.jpg": "/static/media/fm26.20191d076c77a92ce850.jpg",
+    "static/media/bdl4.jpg": "/static/media/bdl4.e42861da846d1a6c9b80.jpg",
+    "static/media/metal.jpg": "/static/media/metal.e993f405168248718caa.jpg",
+    "static/media/REDM.jpg": "/static/media/REDM.4fc59b04db2f02f9fda0.jpg",
+    "static/media/wal-left.jpg": "/static/media/wal-left.60f194c088b2bdd95f96.jpg",
+    "static/media/wal-right.jpg": "/static/media/wal-right.e3aaadce15524058fb15.jpg",
+    "index.html": "/index.html",
+    "main.fdcf740f.css.map": "/static/css/main.fdcf740f.css.map",
+    "main.3a65a795.js.map": "/static/js/main.3a65a795.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.fdcf740f.css",
+    "static/js/main.3a65a795.js"
+  ]
+}
