@@ -1,150 +1,92 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import fm26Image from '../assets/games/fm26.jpg';
-import monsterImage from '../assets/games/monster.jpg';
-import needfsImage from '../assets/games/needfs.jpg';
-import sifuIamage from '../assets/games/sifu-cover.jpg';
-import farcry6Image from '../assets/games/far-cry-6-cover.jpg';
-import fifa24Image from '../assets/games/ea-sports-fc-24-cover.jpg';
-import bf1Image from '../assets/games/battlefield-1-cover.jpg';
-import assasinImabe from '../assets/games/assassins-creed-valhalla-cover.jpg';
-import watchdogsImage from '../assets/games/watch-dogs-legion-cover.jpg';
-import bdl4Image from '../assets/games/bdl4.jpg';
-import lsaImage from '../assets/games/lsa.jpg';
-import metalImage from '../assets/games/metal.jpg';
+import React, { useState, useEffect } from 'react';
 import walLeftImage from '../assets/wal-left.jpg';
 import walRightImage from '../assets/wal-right.jpg';
 
 import '../App.css';
 import '../styles/newgame.css';
 
+const API_BASE_URL = 'http://localhost:8080/api';
+
 function Newgame() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredGames, setFilteredGames] = useState([]);
+  const [allGames, setAllGames] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedPlatform, setSelectedPlatform] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  
+  // Fetch games from API on component mount
+  useEffect(() => {
+    fetchGames();
+  }, []);
+
+  const fetchGames = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/games`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data) {
+          setAllGames(data);
+          setError('');
+        } else {
+          setAllGames([]);
+        }
+      } else {
+        setError('ไม่สามารถโหลดรายการเกมได้');
+      }
+    } catch (err) {
+      console.error('Error fetching games:', err);
+      setError('ข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+    } finally {
+      setLoading(false);
+    }
+  };
   
   const handleBuyClick = (game) => {
-    alert(`เพิ่ม ${game.title} ลงในตะกร้าแล้ว\nราคา: ${game.price}`);
+    alert(`เพิ่ม ${game.title} ลงในตะกร้าแล้ว\nราคา: ฿${game.price}`);
   };
 
-  // Sample game data - wrapped in useMemo to prevent recreation on every render
-  const allGames = useMemo(() => [
-    {
-      id: 1,
-      title: 'Football Manager 2026',
-      image: fm26Image,
-      price: '1,990฿',
-      category: 'Sports',
-      releaseDate: '2025-11-01',
-      platforms: ['Steam', 'Epic Games']
-    },
-    {
-      id: 2,
-      title: 'Baldurs Gate 4',
-      image: bdl4Image,
-      price: '2,290฿',
-      category: 'RPG',
-      releaseDate: '2025-09-15',
-      platforms: ['Steam']
-    },
-    {
-      id: 3,
-      title: 'Like a Snake Alive',
-      image: lsaImage,
-      price: '1,790฿',
-      category: 'Action',
-      releaseDate: '2025-10-05',
-      platforms: ['Steam']
-    },
-    {
-      id: 4,
-      title: 'Metal Saga',
-      image: metalImage,
-      price: '1,490฿',
-      category: 'Action',
-      releaseDate: '2025-08-20',
-      platforms: ['Steam', 'Epic Games']
-    },
-    {
-      id: 5,
-      title: 'Monster Hunter Wilds',
-      image: monsterImage,
-      price: '1,890฿',
-      category: 'RPG',
-      releaseDate: '2025-12-15',
-      platforms: ['Steam', 'Epic Games']
-    },
-    {
-      id: 6,
-      title: 'Need for Speed Heat',
-      image: needfsImage,
-      price: '1,899฿',
-      category: 'Sports',
-      releaseDate: '2025-11-20',
-      platforms: ['EA']
-    },
-    {
-      id: 7,
-      title: 'Far Cry 6',
-      image: farcry6Image,
-      price: '1,599฿',
-      category: 'Action',
-      releaseDate: '2025-10-30',
-      platforms: ['Ubisoft']
-    },
-    {
-      id: 8,
-      title: 'Sifu',
-      image: sifuIamage,
-      price: '539฿',
-      category: 'Action',
-      releaseDate: '2025-09-25',
-      platforms: ['Epic Games']
-    },
-    {
-      id: 9,
-      title: 'Battlefield 1',
-      image: bf1Image,
-      price: '599฿',
-      category: 'FPS',
-      releaseDate: '2025-11-10',
-      platforms: ['EA']
-    },
-    {
-      id: 10,
-      title: 'EA SPORTS FC 24',
-      image: fifa24Image,
-      price: '1,899฿',
-      category: 'Sports',
-      releaseDate: '2025-12-01',
-      platforms: ['EA']
-    },
-    {
-      id: 11,
-      title: 'Assassins Creed Valhalla',
-      image: assasinImabe,
-      price: '1,599฿',
-      category: 'Action',
-      releaseDate: '2025-09-05',
-      platforms: ['XBOX', 'Ubisoft']
-    },
-    {
-      id: 12,
-      title: 'Watch Dogs Legion',
-      image: watchdogsImage,
-      price: '1,590฿',
-      category: 'Action',
-      releaseDate: '2025-10-15',
-      platforms: ['XBOX', 'Ubisoft']
-    }
-  ], []);
+  // Map API response to display format
+  const mapGameData = (apiGame) => {
+    const categoryMap = {
+      'แอคชั่น': 'Action',
+      'ผจญภัย': 'Adventure',
+      'กีฬา': 'Sports',
+      'ยิง FPS': 'FPS',
+      'แข่งรถ': 'Racing',
+      'เล่นตามบทบาท RPG': 'RPG',
+      'วางแผนกลยุทธ์': 'Strategy'
+    };
 
-  const categories = ['all', 'Action', 'RPG', 'Sports', 'FPS'];
-  const platforms = ['all', 'Steam', 'Epic Games', 'EA', 'XBOX', 'Ubisoft'];
+    const platformMap = {
+      'PC (Steam)': 'Steam',
+      'PC (Epic)': 'Epic Games',
+      'PlayStation 5': 'PS5',
+      'Xbox Series X|S': 'Xbox',
+      'Nintendo Switch': 'Switch'
+    };
+
+    return {
+      id: apiGame.id,
+      title: apiGame.title,
+      price: apiGame.price,
+      category: categoryMap[apiGame.category] || apiGame.category,
+      releaseDate: apiGame.release_date,
+      imageUrl: apiGame.image_url || '',
+      platforms: Array.isArray(apiGame.platforms) 
+        ? apiGame.platforms.map(p => platformMap[p] || p)
+        : apiGame.platforms.split(',').map(p => platformMap[p.trim()] || p.trim())
+    };
+  };
+
+  const categories = ['all', 'Action', 'Adventure', 'Sports', 'FPS', 'Racing', 'RPG', 'Strategy'];
+  const platforms = ['all', 'Steam', 'Epic Games', 'PS5', 'Xbox', 'Switch'];
 
   // Filter games based on search query, category, and platform
   useEffect(() => {
-    let filtered = [...allGames];
+    let filtered = allGames.map(mapGameData);
 
     if (searchQuery) {
       filtered = filtered.filter(game => 
@@ -169,6 +111,9 @@ function Newgame() {
       <div className="search-section">
         <h1>เกมทั้งหมด</h1>
         <p>ค้นพบเกมใหม่ที่น่าตื่นเต้นและพร้อมให้คุณได้สัมผัสประสบการณ์</p>
+        
+        {error && <div className="error-message">{error}</div>}
+        {loading && <div className="loading-message">กำลังโหลด...</div>}
         
         <div className="search-controls">
           <div className="search-input">
@@ -212,23 +157,27 @@ function Newgame() {
 
         <section className="roblox-section">
           <div className="roblox-grid">
-          {filteredGames.length > 0 ? (
+          {!loading && filteredGames.length > 0 ? (
             filteredGames.map(game => (
               <div key={game.id} className="roblox-card">
-                <div 
-                  className="roblox-image" 
-                  style={{backgroundImage: `url(${game.image})`}}
-                ></div>
+                <div className="roblox-image">
+                  {game.imageUrl ? (
+                    <img src={game.imageUrl} alt={game.title} />
+                  ) : (
+                    <div className="game-placeholder">{game.title}</div>
+                  )}
+                </div>
                 <div className="roblox-info">
                   <div className="roblox-title">{game.title}</div>
+                  <div className="game-category">{game.category}</div>
                   <div className="price-button-container">
-                    <div className="roblox-price">฿{game.price.replace('฿', '').replace(',', '')}</div>
+                    <div className="roblox-price">฿{game.price.toFixed(0)}</div>
                     <button className="buy-btn" onClick={() => handleBuyClick(game)}>ซื้อเลย</button>
                   </div>
                 </div>
               </div>
             ))
-          ) : (
+          ) : !loading && (
             <div className="no-results">
               <i className="fas fa-search fa-3x mb-4"></i>
               <p>ไม่พบเกมที่คุณค้นหา</p>

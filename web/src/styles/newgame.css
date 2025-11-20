@@ -366,3 +366,42 @@
   font-weight: 600;
   color: #333;
 }
+
+.game-placeholder {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 200px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  word-break: break-word;
+}
+
+.game-category {
+  font-size: 0.85rem;
+  color: #667eea;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
+.error-message {
+  background-color: #f44336;
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.loading-message {
+  background-color: #2196F3;
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+}

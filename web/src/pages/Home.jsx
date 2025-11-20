@@ -75,36 +75,90 @@ function Home() {
     alert(`คุณกำลังจะเปิดเกม: ${gameTitle}`);
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     const formUsername = e.target.elements[0].value;
     const formPassword = e.target.elements[1].value;
     
-    if (formUsername === 'Admin' && formPassword === 'Admin123') {
-      setIsLoggedIn(true);
-      setUsername('Admin');
-      localStorage.setItem('username', 'Admin');
-      localStorage.setItem('isAdmin', 'true');
-      setShowLoginModal(false);
-      // เพิ่มการหน่วงเวลาเล็กน้อยก่อน redirect
-      setTimeout(() => {
-        window.location.href = '/backoffice';
-      }, 100);
-    } else {
-      setIsLoggedIn(true);
-      setUsername('ผู้ใช้');
-      localStorage.setItem('username', 'ผู้ใช้');
-      localStorage.setItem('isAdmin', 'false');
-      setShowLoginModal(false);
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: formUsername,
+          password: formPassword,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setIsLoggedIn(true);
+        setUsername(data.username);
+        localStorage.setItem('username', data.username);
+        localStorage.setItem('isAdmin', data.is_admin.toString());
+        localStorage.setItem('userId', data.id.toString());
+        setShowLoginModal(false);
+        
+        // Redirect to backoffice if admin
+        if (data.is_admin) {
+          setTimeout(() => {
+            window.location.href = '/backoffice';
+          }, 100);
+        }
+      } else {
+        alert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('ข้อผิดพลาดในการเข้าสู่ระบบ กรุณาลองใหม่');
     }
   };
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    // In a real app, you would create a new user here
-    setIsLoggedIn(true);
-    setUsername('ผู้ใช้ใหม่');
-    setShowSignupModal(false);
+    const formUsername = e.target.elements[0].value;
+    const formEmail = e.target.elements[1].value;
+    const formPassword = e.target.elements[2].value;
+    const formConfirmPassword = e.target.elements[3].value;
+
+    if (formPassword !== formConfirmPassword) {
+      alert('รหัสผ่านไม่ตรงกัน');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: formUsername,
+          email: formEmail,
+          password: formPassword,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setIsLoggedIn(true);
+        setUsername(data.username);
+        localStorage.setItem('username', data.username);
+        localStorage.setItem('isAdmin', 'false');
+        localStorage.setItem('userId', data.id.toString());
+        setShowSignupModal(false);
+        alert('สมัครสมาชิกสำเร็จ');
+      } else if (response.status === 409) {
+        alert('ชื่อผู้ใช้นี้มีอยู่แล้ว');
+      } else {
+        alert('ข้อผิดพลาดในการสมัครสมาชิก');
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      alert('ข้อผิดพลาดในการสมัครสมาชิก กรุณาลองใหม่');
+    }
   };
 
   const handleLogout = () => {

@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/backoffice.css';
 
+const API_BASE_URL = 'http://localhost:8080/api';
+
 function BackOffice() {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   
   // Check if user is admin on component mount and when localStorage changes
   useEffect(() => {
@@ -16,6 +20,7 @@ function BackOffice() {
         navigate('/');
       } else {
         setIsAdmin(true);
+        fetchGames();
       }
     };
 
@@ -50,32 +55,7 @@ function BackOffice() {
     'Nintendo Switch'
   ];
 
-  const [games, setGames] = useState([
-    { 
-      id: 1, 
-      title: 'Football Manager 2026', 
-      price: 1599,
-      category: 'กีฬา',
-      platforms: ['PC (Steam)', 'PC (Epic)'],
-      releaseDate: '2025-11-06'
-    },
-    { 
-      id: 2, 
-      title: 'Borderlands 4', 
-      price: 1890,
-      category: 'ยิง FPS',
-      platforms: ['PC (Steam)', 'PlayStation 5', 'Xbox Series X|S'],
-      releaseDate: '2025-12-25'
-    },
-    { 
-      id: 3, 
-      title: 'Lost Soul Aside', 
-      price: 1899,
-      category: 'แอคชั่น',
-      platforms: ['PlayStation 5', 'PC (Epic)'],
-      releaseDate: '2026-01-15'
-    },
-  ]);
+  const [games, setGames] = useState([]);
 
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ 
@@ -84,9 +64,31 @@ function BackOffice() {
     category: categories[0],
     platforms: [],
     releaseDate: '',
-    image: null,
+    image_url: '',
     imagePreview: null
   });
+
+  // Fetch games from API
+  const fetchGames = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/games`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data) {
+          setGames(data);
+          setError('');
+        }
+      } else {
+        setError('ไม่สามารถโหลดรายการเกมได้');
+      }
+    } catch (err) {
+      console.error('Error fetching games:', err);
+      setError('ข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, checked } = e.target;
@@ -113,42 +115,84 @@ function BackOffice() {
         return;
       }
       
-      // Create preview URL
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setForm(prev => ({
-          ...prev,
-          image: file,
-          imagePreview: reader.result
-        }));
-      };
-      reader.readAsDataURL(file);
+      // Upload image to backend
+      uploadImage(file);
     }
   };
 
-  const handleAdd = () => {
+  const uploadImage = async (file) => {
+    try {
+      setLoading(true);
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      const response = await fetch(`${API_BASE_URL}/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setForm(prev => ({
+          ...prev,
+          image_url: data.image_url,
+        }));
+      } else {
+        alert('ไม่สามารถอัปโหลดรูปภาพได้');
+      }
+    } catch (err) {
+      console.error('Error uploading image:', err);
+      alert('ข้อผิดพลาดในการอัปโหลดรูปภาพ');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAdd = async () => {
     if (!form.title || !form.price || !form.category || form.platforms.length === 0 || !form.releaseDate) {
       return alert('กรุณากรอกข้อมูลให้ครบถ้วน');
     }
-    const newGame = { 
-      id: Date.now(), 
-      title: form.title, 
-      price: Number(form.price),
-      category: form.category,
-      platforms: [...form.platforms],
-      releaseDate: form.releaseDate,
-      image: form.imagePreview || null
-    };
-    setGames(prev => [newGame, ...prev]);
-    setForm({ 
-      title: '', 
-      price: '', 
-      category: categories[0], 
-      platforms: [],
-      releaseDate: '',
-      image: null,
-      imagePreview: null
-    });
+
+    try {
+      setLoading(true);
+      const userId = localStorage.getItem('userId');
+      const response = await fetch(`${API_BASE_URL}/games`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: form.title,
+          price: parseFloat(form.price),
+          category: form.category,
+          platforms: form.platforms,
+          release_date: form.releaseDate,
+          image_url: form.image_url || '',
+          created_by: parseInt(userId),
+        }),
+      });
+
+      if (response.ok) {
+        alert('เพิ่มเกมสำเร็จ');
+        await fetchGames();
+        setForm({ 
+          title: '', 
+          price: '', 
+          category: categories[0], 
+          platforms: [],
+          releaseDate: '',
+          image_url: '',
+          imagePreview: null
+        });
+      } else {
+        alert('ไม่สามารถเพิ่มเกมได้');
+      }
+    } catch (err) {
+      console.error('Error adding game:', err);
+      alert('ข้อผิดพลาดในการเพิ่มเกม');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEdit = (game) => {
@@ -157,45 +201,80 @@ function BackOffice() {
       title: game.title, 
       price: String(game.price),
       category: game.category,
-      platforms: [...game.platforms],
-      releaseDate: game.releaseDate,
-      image: null,
-      imagePreview: game.image || null
-    });
-  };
-
-  const handleSave = () => {
-    if (!form.title || !form.price || !form.category || form.platforms.length === 0 || !form.releaseDate) {
-      return alert('กรุณากรอกข้อมูลให้ครบถ้วน');
-    }
-    setGames(games.map(item => 
-      item.id === editing 
-        ? { 
-            ...item, 
-            title: form.title, 
-            price: Number(form.price),
-            category: form.category,
-            platforms: [...form.platforms],
-            releaseDate: form.releaseDate,
-            image: form.imagePreview || item.image
-          }
-        : item
-    ));
-    setEditing(null);
-    setForm({ 
-      title: '', 
-      price: '', 
-      category: categories[0], 
-      platforms: [],
-      releaseDate: '',
-      image: null,
+      platforms: Array.isArray(game.platforms) ? game.platforms : game.platforms.split(','),
+      releaseDate: game.release_date,
+      image_url: game.image_url || '',
       imagePreview: null
     });
   };
 
-  const handleDelete = (id) => {
+  const handleSave = async () => {
+    if (!form.title || !form.price || !form.category || form.platforms.length === 0 || !form.releaseDate) {
+      return alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/games/${editing}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: form.title,
+          price: parseFloat(form.price),
+          category: form.category,
+          platforms: form.platforms,
+          release_date: form.releaseDate,
+          image_url: form.image_url || '',
+        }),
+      });
+
+      if (response.ok) {
+        alert('แก้ไขเกมสำเร็จ');
+        await fetchGames();
+        setEditing(null);
+        setForm({ 
+          title: '', 
+          price: '', 
+          category: categories[0], 
+          platforms: [],
+          releaseDate: '',
+          image_url: '',
+          imagePreview: null
+        });
+      } else {
+        alert('ไม่สามารถแก้ไขเกมได้');
+      }
+    } catch (err) {
+      console.error('Error updating game:', err);
+      alert('ข้อผิดพลาดในการแก้ไขเกม');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
     if (!window.confirm('ยืนยันการลบเกมนี้?')) return;
-    setGames(games.filter(item => item.id !== id));
+    
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/games/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        alert('ลบเกมสำเร็จ');
+        await fetchGames();
+      } else {
+        alert('ไม่สามารถลบเกมได้');
+      }
+    } catch (err) {
+      console.error('Error deleting game:', err);
+      alert('ข้อผิดพลาดในการลบเกม');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -206,7 +285,7 @@ function BackOffice() {
       category: categories[0], 
       platforms: [],
       releaseDate: '',
-      image: null,
+      image_url: '',
       imagePreview: null
     });
   };
@@ -221,6 +300,9 @@ function BackOffice() {
         <h1>แผงควบคุมผู้ดูแลระบบ</h1>
         <p>จัดการรายการเกม</p>
       </header>
+
+      {error && <div className="error-message">{error}</div>}
+      {loading && <div className="loading-message">กำลังโหลด...</div>}
 
       <section className="backoffice-actions">
         <div className="form-grid">
@@ -279,9 +361,9 @@ function BackOffice() {
               onChange={handleImageChange}
               className="image-input"
             />
-            {form.imagePreview && (
-              <div className="image-preview">
-                <img src={form.imagePreview} alt="Preview" />
+            {form.image_url && (
+              <div className="image-info">
+                ไฟล์: {form.image_url}
               </div>
             )}
           </div>
@@ -307,11 +389,11 @@ function BackOffice() {
           <div className="form-actions">
             {editing ? (
               <>
-                <button className="btn save" onClick={handleSave}>บันทึก</button>
-                <button className="btn cancel" onClick={handleCancel}>ยกเลิก</button>
+                <button className="btn save" onClick={handleSave} disabled={loading}>บันทึก</button>
+                <button className="btn cancel" onClick={handleCancel} disabled={loading}>ยกเลิก</button>
               </>
             ) : (
-              <button className="btn add" onClick={handleAdd}>เพิ่มเกม</button>
+              <button className="btn add" onClick={handleAdd} disabled={loading}>เพิ่มเกม</button>
             )}
           </div>
         </div>
@@ -335,13 +417,13 @@ function BackOffice() {
                 <td>{game.title}</td>
                 <td>{game.category}</td>
                 <td>{game.price}</td>
-                <td>{game.platforms.join(', ')}</td>
-                <td>{new Date(game.releaseDate).toLocaleDateString('th-TH')}</td>
+                <td>{Array.isArray(game.platforms) ? game.platforms.join(', ') : game.platforms}</td>
+                <td>{new Date(game.release_date).toLocaleDateString('th-TH')}</td>
                 <td className="actions-cell">
-                  <button className="btn edit" onClick={() => handleEdit(game)}>
+                  <button className="btn edit" onClick={() => handleEdit(game)} disabled={loading}>
                     แก้ไข
                   </button>
-                  <button className="btn delete" onClick={() => handleDelete(game.id)}>
+                  <button className="btn delete" onClick={() => handleDelete(game.id)} disabled={loading}>
                     ลบ
                   </button>
                 </td>
