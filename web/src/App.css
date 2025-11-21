@@ -521,7 +521,7 @@ body {
 .modal-content h2 {
   margin-bottom: 20px;
   text-align: center;
-  color: #333;
+  color: #000 !important;
 }
 
 .form-group {
@@ -532,15 +532,26 @@ body {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
-  color: #555;
+  color: #000000 !important;
 }
 
 .form-group input {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #000 !important;
   border-radius: 5px;
   font-size: 16px;
+  outline: none;
+  color: #000 !important;
+}
+
+.form-group input::placeholder {
+  color: #999;
+}
+
+.form-group input:focus {
+  border-color: #000 !important;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
 }
 
 .form-actions {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import walLeftImage from '../assets/wal-left.jpg';
 import walRightImage from '../assets/wal-right.jpg';
 
@@ -9,11 +10,14 @@ import '../styles/newgame.css';
 const API_BASE_URL = 'http://localhost:8080/api';
 
 function Newgame() {
+  const [searchParams] = useSearchParams();
+  const platformFromUrl = searchParams.get('platform') || 'all';
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredGames, setFilteredGames] = useState([]);
   const [allGames, setAllGames] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedPlatform, setSelectedPlatform] = useState('all');
+  const [selectedPlatform, setSelectedPlatform] = useState(platformFromUrl);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -60,10 +64,9 @@ function Newgame() {
   }, [allGames]);
 
   const platforms = useMemo(() => {
-    const allPlatforms = allGames.flatMap(game => game.platforms || []);
-    const uniquePlatforms = ['all', ...new Set(allPlatforms)];
-    return uniquePlatforms;
-  }, [allGames]);
+    // Fixed platforms matching Home page buttons
+    return ['all', 'Steam', 'EA app', 'Ubisoft', 'Xbox', 'Microsoft Store'];
+  }, []);
 
   // Filter games based on search query, category, and platform
   useEffect(() => {
@@ -93,6 +96,14 @@ function Newgame() {
 
     setFilteredGames(filtered);
   }, [searchQuery, selectedCategory, selectedPlatform, allGames]);
+
+  // Update platform filter when URL parameter changes
+  useEffect(() => {
+    const platformParam = searchParams.get('platform');
+    if (platformParam && platformParam !== 'all') {
+      setSelectedPlatform(platformParam);
+    }
+  }, [searchParams]);
 
   return (
     <div className="newgame-container">

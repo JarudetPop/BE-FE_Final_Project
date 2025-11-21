@@ -21,6 +21,10 @@ function Home() {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [username, setUsername] = useState(() => localStorage.getItem('username') || '');
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [newGames, setNewGames] = useState([]);
+  const [popularGames, setPopularGames] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
   // Sample images for the carousel
   const slides = [
@@ -51,6 +55,39 @@ function Home() {
     }
   }, []);
 
+  // Fetch games from backend
+  useEffect(() => {
+    const fetchGames = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('http://localhost:8080/api/games');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch games');
+        }
+        
+        const data = await response.json();
+        
+        // Split games into new and popular (for demo purposes)
+        // You can add category or date logic later
+        const allGames = data || [];
+        setNewGames(allGames.slice(0, 4));
+        setPopularGames(allGames.slice(4, 8));
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching games:', err);
+        setError(err.message);
+        // Keep default static games if API fails
+        setNewGames([]);
+        setPopularGames([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGames();
+  }, []);
+
   // Auto-advance the carousel every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -61,7 +98,7 @@ function Home() {
   }, [slides.length]);
 
   const handlePlatformClick = (platform) => {
-    alert(`คุณกำลังจะเปิด ${platform} เพื่อดาวน์โหลดเกม`);
+    window.location.href = `/newgame?platform=${encodeURIComponent(platform)}`;
   };
 
   const handleSearch = () => {
@@ -75,42 +112,104 @@ function Home() {
     alert(`คุณกำลังจะเปิดเกม: ${gameTitle}`);
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     const formUsername = e.target.elements[0].value;
     const formPassword = e.target.elements[1].value;
     
-    if (formUsername === 'Admin' && formPassword === 'Admin123') {
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: formUsername,
+          password: formPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.error || 'เข้าสู่ระบบไม่สำเร็จ');
+        return;
+      }
+
+      const data = await response.json();
+      
       setIsLoggedIn(true);
-      setUsername('Admin');
-      localStorage.setItem('username', 'Admin');
-      localStorage.setItem('isAdmin', 'true');
+      setUsername(data.username);
+      localStorage.setItem('username', data.username);
+      localStorage.setItem('userId', data.id);
+      localStorage.setItem('email', data.email);
+      localStorage.setItem('isAdmin', data.is_admin ? 'true' : 'false');
       setShowLoginModal(false);
-      // เพิ่มการหน่วงเวลาเล็กน้อยก่อน redirect
-      setTimeout(() => {
-        window.location.href = '/backoffice';
-      }, 100);
-    } else {
-      setIsLoggedIn(true);
-      setUsername('ผู้ใช้');
-      localStorage.setItem('username', 'ผู้ใช้');
-      localStorage.setItem('isAdmin', 'false');
-      setShowLoginModal(false);
+      
+      // Redirect to backoffice if admin
+      if (data.is_admin) {
+        setTimeout(() => {
+          window.location.href = '/backoffice';
+        }, 100);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
     }
   };
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    // In a real app, you would create a new user here
-    setIsLoggedIn(true);
-    setUsername('ผู้ใช้ใหม่');
-    setShowSignupModal(false);
+    const formUsername = e.target.elements[0].value;
+    const formEmail = e.target.elements[1].value;
+    const formPassword = e.target.elements[2].value;
+    const confirmPassword = e.target.elements[3].value;
+    
+    if (formPassword !== confirmPassword) {
+      alert('รหัสผ่านไม่ตรงกัน');
+      return;
+    }
+    
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: formUsername,
+          email: formEmail,
+          password: formPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.error || 'สมัครสมาชิกไม่สำเร็จ');
+        return;
+      }
+
+      const data = await response.json();
+      
+      alert('สมัครสมาชิกสำเร็จ!');
+      setIsLoggedIn(true);
+      setUsername(data.username);
+      localStorage.setItem('username', data.username);
+      localStorage.setItem('userId', data.id);
+      localStorage.setItem('email', data.email);
+      localStorage.setItem('isAdmin', data.is_admin ? 'true' : 'false');
+      setShowSignupModal(false);
+    } catch (error) {
+      console.error('Signup error:', error);
+      alert('เกิดข้อผิดพลาดในการสมัครสมาชิก');
+    }
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUsername('');
     localStorage.removeItem('username');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('email');
     localStorage.removeItem('isAdmin');
     // Dispatch logout event
     window.dispatchEvent(new Event('logout'));
@@ -225,48 +324,69 @@ function Home() {
                 <h2 className="section-title">ออกใหม่</h2>
                 <button className="view-all-btn" onClick={() => window.location.href = '/newgame'}>ดูทั้งหมด</button>
               </div>
-              <div className="roblox-grid">
-            <div className="roblox-card">
-              <div className="roblox-image" style={{backgroundImage: `url(${fm26Image})`}}></div>
-              <div className="roblox-info">
-                <div className="roblox-title">Football Manager 2026</div>
-                <div className="price-button-container">
-                  <div className="roblox-price">฿1599</div>
-                  <button className="buy-btn" onClick={() => handleRobloxClick('Football Manager 2026')}>ซื้อเลย</button>
+              {loading ? (
+                <div className="loading">กำลังโหลดเกม...</div>
+              ) : error ? (
+                <div className="error">เกิดข้อผิดพลาด: {error}</div>
+              ) : newGames.length === 0 ? (
+                <div className="roblox-grid">
+                  <div className="roblox-card">
+                    <div className="roblox-image" style={{backgroundImage: `url(${fm26Image})`}}></div>
+                    <div className="roblox-info">
+                      <div className="roblox-title">Football Manager 2026</div>
+                      <div className="price-button-container">
+                        <div className="roblox-price">฿1599</div>
+                        <button className="buy-btn" onClick={() => handleRobloxClick('Football Manager 2026')}>ซื้อเลย</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="roblox-card">
+                    <div className="roblox-image" style={{backgroundImage: `url(${bdl4Image})`}}></div>
+                    <div className="roblox-info">
+                      <div className="roblox-title">Borderlands 4</div>
+                      <div className="price-button-container">
+                        <div className="roblox-price">฿1890</div>
+                        <button className="buy-btn" onClick={() => handleRobloxClick('Borderlands 4')}>ซื้อเลย</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="roblox-card">
+                    <div className="roblox-image" style={{backgroundImage: `url(${lsaImage})`}}></div>
+                    <div className="roblox-info">
+                      <div className="roblox-title">Lost Soul Aside</div>
+                      <div className="price-button-container">
+                        <div className="roblox-price">฿1899</div>
+                        <button className="buy-btn" onClick={() => handleRobloxClick('Lost Soul Aside')}>ซื้อเลย</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="roblox-card">
+                    <div className="roblox-image" style={{backgroundImage: `url(${metalImage})`}}></div>
+                    <div className="roblox-info">
+                      <div className="roblox-title">Metal Gear Solid Δ: Snake Eater</div>
+                      <div className="price-button-container">
+                        <div className="roblox-price">฿1899</div>
+                        <button className="buy-btn" onClick={() => handleRobloxClick('Metal Gear Solid Δ: Snake Eater')}>ซื้อเลย</button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="roblox-card">
-              <div className="roblox-image" style={{backgroundImage: `url(${bdl4Image})`}}></div>
-              <div className="roblox-info">
-                <div className="roblox-title">Borderlands 4</div>
-                <div className="price-button-container">
-                  <div className="roblox-price">฿1890</div>
-                  <button className="buy-btn" onClick={() => handleRobloxClick('Borderlands 4')}>ซื้อเลย</button>
+              ) : (
+                <div className="roblox-grid">
+                  {newGames.map((game) => (
+                    <div key={game.id} className="roblox-card">
+                      <div className="roblox-image" style={{backgroundImage: `url(${game.image_url || fm26Image})`}}></div>
+                      <div className="roblox-info">
+                        <div className="roblox-title">{game.title}</div>
+                        <div className="price-button-container">
+                          <div className="roblox-price">฿{game.price}</div>
+                          <button className="buy-btn" onClick={() => handleRobloxClick(game.title)}>ซื้อเลย</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
-            </div>
-            <div className="roblox-card">
-              <div className="roblox-image" style={{backgroundImage: `url(${lsaImage})`}}></div>
-              <div className="roblox-info">
-                <div className="roblox-title">Lost Soul Aside</div>
-                <div className="price-button-container">
-                  <div className="roblox-price">฿1899</div>
-                  <button className="buy-btn" onClick={() => handleRobloxClick('Lost Soul Aside')}>ซื้อเลย</button>
-                </div>
-              </div>
-            </div>
-            <div className="roblox-card">
-              <div className="roblox-image" style={{backgroundImage: `url(${metalImage})`}}></div>
-              <div className="roblox-info">
-                <div className="roblox-title">Metal Gear Solid Δ: Snake Eater</div>
-                <div className="price-button-container">
-                  <div className="roblox-price">฿1899</div>
-                  <button className="buy-btn" onClick={() => handleRobloxClick('Metal Gear Solid Δ: Snake Eater')}>ซื้อเลย</button>
-                </div>
-              </div>
-            </div>
-          </div>
+              )}
         </section>
 
         <section className="roblox-section">
@@ -274,48 +394,69 @@ function Home() {
             <h2 className="section-title">ยอดนิยม</h2>
             <button className="view-all-btn" onClick={() => window.location.href = '/newgame'}>ดูทั้งหมด</button>
           </div>
-          <div className="roblox-grid">
-            <div className="roblox-card">
-              <div className="roblox-image" style={{backgroundImage: `url(${GTA6Image})`}}></div>
-              <div className="roblox-info">
-                <div className="roblox-title">Grand Theft Auto VI</div>
-                <div className="price-button-container">
-                  <div className="roblox-price">฿2590</div>
-                  <button className="buy-btn" onClick={() => handleRobloxClick('Grand Theft Auto VI')}>ซื้อเลย</button>
+          {loading ? (
+            <div className="loading">กำลังโหลดเกม...</div>
+          ) : error ? (
+            <div className="error">เกิดข้อผิดพลาด: {error}</div>
+          ) : popularGames.length === 0 ? (
+            <div className="roblox-grid">
+              <div className="roblox-card">
+                <div className="roblox-image" style={{backgroundImage: `url(${GTA6Image})`}}></div>
+                <div className="roblox-info">
+                  <div className="roblox-title">Grand Theft Auto VI</div>
+                  <div className="price-button-container">
+                    <div className="roblox-price">฿2590</div>
+                    <button className="buy-btn" onClick={() => handleRobloxClick('Grand Theft Auto VI')}>ซื้อเลย</button>
+                  </div>
+                </div>
+              </div>
+              <div className="roblox-card">
+                <div className="roblox-image" style={{backgroundImage: `url(${MGSImage})`}}></div>
+                <div className="roblox-info">
+                  <div className="roblox-title">Metal Gear Solid</div>
+                  <div className="price-button-container">
+                    <div className="roblox-price">฿1790</div>
+                    <button className="buy-btn" onClick={() => handleRobloxClick('Metal Gear Solid')}>ซื้อเลย</button>
+                  </div>
+                </div>
+              </div>
+              <div className="roblox-card">
+                <div className="roblox-image" style={{backgroundImage: `url(${REDMImage})`}}></div>
+                <div className="roblox-info">
+                  <div className="roblox-title">Red Dead Redemption</div>
+                  <div className="price-button-container">
+                    <div className="roblox-price">฿1990</div>
+                    <button className="buy-btn" onClick={() => handleRobloxClick('Red Dead Redemption')}>ซื้อเลย</button>
+                  </div>
+                </div>
+              </div>
+              <div className="roblox-card">
+                <div className="roblox-image" style={{backgroundImage: `url(${fm26Image})`}}></div>
+                <div className="roblox-info">
+                  <div className="roblox-title">Football Manager 2026</div>
+                  <div className="price-button-container">
+                    <div className="roblox-price">฿1599</div>
+                    <button className="buy-btn" onClick={() => handleRobloxClick('Football Manager 2026')}>ซื้อเลย</button>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="roblox-card">
-              <div className="roblox-image" style={{backgroundImage: `url(${MGSImage})`}}></div>
-              <div className="roblox-info">
-                <div className="roblox-title">Metal Gear Solid</div>
-                <div className="price-button-container">
-                  <div className="roblox-price">฿1790</div>
-                  <button className="buy-btn" onClick={() => handleRobloxClick('Metal Gear Solid')}>ซื้อเลย</button>
+          ) : (
+            <div className="roblox-grid">
+              {popularGames.map((game) => (
+                <div key={game.id} className="roblox-card">
+                  <div className="roblox-image" style={{backgroundImage: `url(${game.image_url || GTA6Image})`}}></div>
+                  <div className="roblox-info">
+                    <div className="roblox-title">{game.title}</div>
+                    <div className="price-button-container">
+                      <div className="roblox-price">฿{game.price}</div>
+                      <button className="buy-btn" onClick={() => handleRobloxClick(game.title)}>ซื้อเลย</button>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-            <div className="roblox-card">
-              <div className="roblox-image" style={{backgroundImage: `url(${REDMImage})`}}></div>
-              <div className="roblox-info">
-                <div className="roblox-title">Red Dead Redemption</div>
-                <div className="price-button-container">
-                  <div className="roblox-price">฿1990</div>
-                  <button className="buy-btn" onClick={() => handleRobloxClick('Red Dead Redemption')}>ซื้อเลย</button>
-                </div>
-              </div>
-            </div>
-            <div className="roblox-card">
-              <div className="roblox-image" style={{backgroundImage: `url(${fm26Image})`}}></div>
-              <div className="roblox-info">
-                <div className="roblox-title">Football Manager 2026</div>
-                <div className="price-button-container">
-                  <div className="roblox-price">฿1599</div>
-                  <button className="buy-btn" onClick={() => handleRobloxClick('Football Manager 2026')}>ซื้อเลย</button>
-                </div>
-              </div>
-            </div>
-          </div>
+          )}
         </section>
       </div>
 
